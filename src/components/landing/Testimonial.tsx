@@ -27,18 +27,18 @@ const Testimonial: React.FC<TestimonialProps> = ({
 
   return (
     <Card className="testimonial-card h-full flex flex-col">
-      <CardContent className="pt-6 flex-1 flex flex-col">
-        <div className="mb-4 text-primary">
-          <Quote className="h-5 w-5" />
+      <CardContent className="pt-5 flex-1 flex flex-col">
+        <div className="mb-3 text-primary">
+          <Quote className="h-4 w-4" />
         </div>
-        <p className="text-foreground mb-6 flex-1">"{quote}"</p>
+        <p className="text-foreground mb-4 flex-1 text-sm">{quote}</p>
         <div className="flex items-center">
-          <Avatar className="h-10 w-10 mr-3">
+          <Avatar className="h-8 w-8 mr-2">
             {avatarSrc && <AvatarImage src={avatarSrc} alt={author} />}
             <AvatarFallback>{initials}</AvatarFallback>
           </Avatar>
           <div>
-            <p className="font-medium text-sm">{author}</p>
+            <p className="font-medium text-xs">{author}</p>
             <p className="text-xs text-muted-foreground">
               {role}, {company}
             </p>

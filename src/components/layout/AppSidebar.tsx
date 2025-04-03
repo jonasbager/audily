@@ -11,14 +11,8 @@ import {
   LogOut, 
   Shield 
 } from 'lucide-react';
-import { 
-  Tooltip, 
-  TooltipContent, 
-  TooltipProvider, 
-  TooltipTrigger 
-} from '@/components/ui/tooltip';
-import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { buttonVariants } from '@/components/ui/button';
 
 interface SidebarLinkProps {
   to: string;
@@ -29,28 +23,22 @@ interface SidebarLinkProps {
 
 const SidebarLink = ({ to, icon, label, isActive }: SidebarLinkProps) => {
   return (
-    <TooltipProvider>
-      <Tooltip delayDuration={0}>
-        <TooltipTrigger asChild>
-          <Link
-            to={to}
-            className={cn(
-              buttonVariants({ variant: 'ghost', size: 'icon' }),
-              "h-10 w-10 p-0 relative",
-              isActive && "bg-sidebar-accent text-sidebar-accent-foreground"
-            )}
-          >
-            {icon}
-            {isActive && (
-              <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-sidebar-primary rounded-r-full" />
-            )}
-          </Link>
-        </TooltipTrigger>
-        <TooltipContent side="right" className="bg-popover border-border">
-          {label}
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+    <Link
+      to={to}
+      className={cn(
+        buttonVariants({ variant: 'ghost' }),
+        "justify-start w-full h-10 mb-1 relative",
+        isActive && "bg-sidebar-accent text-sidebar-accent-foreground"
+      )}
+    >
+      <div className="flex items-center">
+        <span className="mr-3">{icon}</span>
+        <span>{label}</span>
+      </div>
+      {isActive && (
+        <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-sidebar-primary rounded-r-full" />
+      )}
+    </Link>
   );
 };
 
@@ -61,19 +49,20 @@ const AppSidebar = () => {
   const isActive = (path: string) => pathname === path || pathname.startsWith(`${path}/`);
 
   return (
-    <div className="flex flex-col h-screen w-16 bg-sidebar border-r border-sidebar-border fixed left-0 top-0 z-10">
+    <div className="flex flex-col h-screen w-64 bg-sidebar border-r border-sidebar-border fixed left-0 top-0 z-10">
       <div className="flex flex-col h-full">
         {/* Logo */}
-        <div className="flex justify-center py-4">
-          <Link to="/dashboard" className="flex items-center justify-center">
-            <div className="h-10 w-10 rounded-full bg-sidebar-primary flex items-center justify-center">
+        <div className="flex items-center px-6 py-4">
+          <Link to="/dashboard" className="flex items-center">
+            <div className="h-9 w-9 rounded-full bg-sidebar-primary flex items-center justify-center mr-2">
               <Shield className="h-5 w-5 text-sidebar-primary-foreground" />
             </div>
+            <span className="font-medium text-lg">AuditAI</span>
           </Link>
         </div>
         
         {/* Main Navigation */}
-        <nav className="flex-1 flex flex-col items-center gap-2 px-3 py-8">
+        <nav className="flex-1 flex flex-col px-4 py-6">
           <SidebarLink 
             to="/dashboard" 
             icon={<LayoutDashboard className="h-5 w-5" />} 
@@ -107,7 +96,7 @@ const AppSidebar = () => {
         </nav>
         
         {/* Bottom Navigation */}
-        <div className="px-3 py-4 flex flex-col items-center gap-2">
+        <div className="px-4 py-6 border-t border-sidebar-border">
           <SidebarLink 
             to="/settings" 
             icon={<Settings className="h-5 w-5" />} 
