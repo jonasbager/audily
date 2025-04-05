@@ -70,14 +70,14 @@ const Index = () => {
         <div className="container mx-auto px-4 py-16 md:py-24">
           <div className="max-w-3xl mx-auto text-center">
             <div className="inline-flex items-center px-3 py-1.5 mb-6 rounded-full bg-primary/10 text-primary text-sm font-medium">
-              <span>SOC 2 Compliance Made Simple</span>
+              <span>NIS2 & SOX Compliance Made Simple</span>
             </div>
             <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
-              Ace Your SOC 2 Audit with <span className="gradient-text">AI-Powered</span> Simplicity
+              Accelerate Your <span className="gradient-text">NIS2 & SOX</span> Compliance Journey
             </h1>
             <p className="text-xl text-muted-foreground mb-8 md:px-10">
-              AuditAI streamlines your SOC 2 audit preparation with AI-generated policies, 
-              automated evidence collection, and intelligent compliance guidance.
+              AuditAI streamlines your regulatory compliance with AI-generated policies, 
+              automated evidence collection, and intelligent guidance for NIS2 and SOX requirements.
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
               <Button asChild size="lg" className="gap-2">
@@ -120,46 +120,50 @@ const Index = () => {
       </div>
 
       {/* Features Section */}
-      <div id="features" className="py-16 md:py-24">
+      <div id="features" className="py-16 md:py-20">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
+          <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
               Features that simplify compliance
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Our platform makes SOC 2 compliance accessible with powerful features designed for efficiency.
+              Our platform makes NIS2 and SOX compliance accessible with powerful features designed for efficiency.
             </p>
           </div>
 
-          <FeatureHighlight 
-            title="AI-Powered Policy Generation"
-            description="Generate customized SOC 2 policies with GPT-4, tailored to your organization's specific needs and requirements."
-            icon={FileText}
-            imageUrl="https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=1200"
-          />
-          
-          <FeatureHighlight 
-            title="Intelligent Task Management"
-            description="Track compliance tasks with clear assignments, due dates, and AI-assisted guidance for a streamlined audit process."
-            icon={CheckCircle2}
-            imageUrl="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=1200"
-            reversed={true}
-          />
-          
-          <FeatureHighlight 
-            title="Smart Evidence Collection"
-            description="Upload and organize evidence files with AI categorization and control mapping, making audit preparation a breeze."
-            icon={Lock}
-            imageUrl="https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=1200"
-          />
-          
-          <FeatureHighlight 
-            title="Seamless System Integrations"
-            description="Connect with the tools you already use - Google Workspace, AWS, GitHub, and more - to automatically gather compliance evidence."
-            icon={Database}
-            imageUrl="https://images.unsplash.com/photo-1531297484001-80022131f5a1?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=1200"
-            reversed={true}
-          />
+          <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+            <div className="feature-card">
+              <div className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary mb-4">
+                <FileText className="h-5 w-5" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">AI-Powered Policy Generation</h3>
+              <p className="text-muted-foreground">Generate customized NIS2 and SOX policies with GPT-4, tailored to your organization's specific requirements.</p>
+            </div>
+
+            <div className="feature-card">
+              <div className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary mb-4">
+                <CheckCircle2 className="h-5 w-5" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Intelligent Task Management</h3>
+              <p className="text-muted-foreground">Track compliance tasks with clear assignments, due dates, and AI-assisted guidance for a streamlined audit process.</p>
+            </div>
+
+            <div className="feature-card">
+              <div className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary mb-4">
+                <Lock className="h-5 w-5" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Smart Evidence Collection</h3>
+              <p className="text-muted-foreground">Upload and organize evidence files with AI categorization and requirement mapping for NIS2 and SOX frameworks.</p>
+            </div>
+
+            <div className="feature-card">
+              <div className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary mb-4">
+                <Database className="h-5 w-5" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Seamless System Integrations</h3>
+              <p className="text-muted-foreground">Connect with the tools you already use to automatically gather compliance evidence for both regulatory frameworks.</p>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -171,19 +175,19 @@ const Index = () => {
               What our customers say
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Join these companies that have simplified their SOC 2 compliance journey.
+              Join these companies that have simplified their regulatory compliance journey.
             </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-6">
             <Testimonial
-              quote="AuditAI cut our SOC 2 preparation time in half. The AI-generated policies were spot on and saved us countless hours."
+              quote="AuditAI cut our NIS2 preparation time in half. The AI-generated policies were spot on and saved us countless hours."
               author="Sarah Johnson"
               role="CTO"
               company="TechFlow"
             />
             <Testimonial
-              quote="The evidence collection and task management features made our audit process seamless. Highly recommended for any compliance team."
+              quote="The evidence collection and task management features made our SOX audit process seamless. Highly recommended for any compliance team."
               author="Michael Chen"
               role="Security Lead"
               company="Quantum Systems"
@@ -206,7 +210,7 @@ const Index = () => {
               How AuditAI Works
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              A simple, four-step process to SOC 2 compliance
+              A simple, four-step process to NIS2 and SOX compliance
             </p>
           </div>
 
@@ -216,7 +220,7 @@ const Index = () => {
                 <span className="text-primary font-semibold">1</span>
               </div>
               <h3 className="text-xl font-semibold mb-2">Onboarding</h3>
-              <p className="text-muted-foreground">Answer a few questions about your organization to customize your compliance journey.</p>
+              <p className="text-muted-foreground">Select your compliance framework (NIS2 or SOX) and answer a few questions about your organization.</p>
             </div>
             
             <div className="text-center">
@@ -224,7 +228,7 @@ const Index = () => {
                 <span className="text-primary font-semibold">2</span>
               </div>
               <h3 className="text-xl font-semibold mb-2">Generate Policies</h3>
-              <p className="text-muted-foreground">Our AI creates tailored policies based on your specific business needs and requirements.</p>
+              <p className="text-muted-foreground">Our AI creates tailored policies based on your specific framework requirements and business needs.</p>
             </div>
             
             <div className="text-center">
@@ -232,7 +236,7 @@ const Index = () => {
                 <span className="text-primary font-semibold">3</span>
               </div>
               <h3 className="text-xl font-semibold mb-2">Collect Evidence</h3>
-              <p className="text-muted-foreground">Upload and organize evidence with smart categorization and control mapping.</p>
+              <p className="text-muted-foreground">Upload and organize evidence with smart categorization and requirement mapping for your chosen framework.</p>
             </div>
             
             <div className="text-center">
@@ -250,10 +254,10 @@ const Index = () => {
       <div className="bg-primary/5 border-y border-primary/10">
         <div className="container mx-auto px-4 py-16 md:py-24 text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Ready to simplify your SOC 2 audit?
+            Ready to simplify your compliance journey?
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
-            Join companies using AuditAI to streamline compliance and reduce audit preparation time by 60%.
+            Join companies using AuditAI to streamline NIS2 and SOX compliance and reduce audit preparation time by 60%.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <Button asChild size="lg" className="gap-2">
@@ -397,7 +401,7 @@ const Index = () => {
                 <span className="font-semibold text-lg">AuditAI</span>
               </div>
               <p className="text-muted-foreground mb-4">
-                Simplifying SOC 2 compliance with AI-powered tools and guidance.
+                Simplifying NIS2 and SOX compliance with AI-powered tools and guidance.
               </p>
             </div>
             
@@ -417,7 +421,7 @@ const Index = () => {
                 <li><a href="#" className="text-muted-foreground hover:text-foreground">Blog</a></li>
                 <li><a href="#" className="text-muted-foreground hover:text-foreground">Documentation</a></li>
                 <li><a href="#" className="text-muted-foreground hover:text-foreground">Compliance Guide</a></li>
-                <li><a href="#" className="text-muted-foreground hover:text-foreground">SOC 2 Templates</a></li>
+                <li><a href="#" className="text-muted-foreground hover:text-foreground">NIS2 & SOX Templates</a></li>
               </ul>
             </div>
             
