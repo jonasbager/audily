@@ -33,10 +33,15 @@ import {
   CardTitle 
 } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
+import {
+  RadioGroup,
+  RadioGroupItem,
+} from '@/components/ui/radio-group';
 
 const formSchema = z.object({
   companyName: z.string().min(2, { message: 'Company name is required' }),
   teamSize: z.string().min(1, { message: 'Team size is required' }),
+  complianceFramework: z.string().min(1, { message: 'Compliance framework is required' }),
   systems: z.array(z.string()).min(1, { message: 'Please select at least one system' }),
   targetDate: z.string().min(1, { message: 'Target date is required' }),
   contactRole: z.string().min(1, { message: 'Role is required' }),
@@ -54,6 +59,7 @@ const OnboardingForm: React.FC = () => {
     defaultValues: {
       companyName: '',
       teamSize: '',
+      complianceFramework: '',
       systems: [],
       targetDate: '',
       contactRole: '',
@@ -95,7 +101,7 @@ const OnboardingForm: React.FC = () => {
     // In a real app, we would:
     // 1. Send data to the backend
     // 2. Generate risk profile with GPT-4
-    // 3. Create customized checklist
+    // 3. Create customized checklist based on selected compliance framework
     
     // For now, simulate success and redirect to dashboard
     navigate('/dashboard');
@@ -104,7 +110,7 @@ const OnboardingForm: React.FC = () => {
   return (
     <Card className="w-full max-w-3xl mx-auto card-shadow">
       <CardHeader>
-        <CardTitle>Set Up Your SOC 2 Compliance Profile</CardTitle>
+        <CardTitle>Set Up Your Compliance Profile</CardTitle>
         <CardDescription>
           Tell us about your organization to get a customized compliance plan
         </CardDescription>
@@ -155,6 +161,48 @@ const OnboardingForm: React.FC = () => {
                           <SelectItem value="500+">500+ employees</SelectItem>
                         </SelectContent>
                       </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="complianceFramework"
+                  render={({ field }) => (
+                    <FormItem className="space-y-3">
+                      <FormLabel>Choose Compliance Framework</FormLabel>
+                      <FormControl>
+                        <RadioGroup
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                          className="flex flex-col space-y-1"
+                        >
+                          <FormItem className="flex items-center space-x-3 space-y-0">
+                            <FormControl>
+                              <RadioGroupItem value="nis2" />
+                            </FormControl>
+                            <FormLabel className="font-normal">
+                              NIS2 (EU Cybersecurity Directive)
+                            </FormLabel>
+                          </FormItem>
+                          <div className="pl-7 text-sm text-muted-foreground mb-2">
+                            For EU organizations providing essential or important services
+                          </div>
+                          
+                          <FormItem className="flex items-center space-x-3 space-y-0">
+                            <FormControl>
+                              <RadioGroupItem value="sox" />
+                            </FormControl>
+                            <FormLabel className="font-normal">
+                              SOX (Sarbanes-Oxley Act)
+                            </FormLabel>
+                          </FormItem>
+                          <div className="pl-7 text-sm text-muted-foreground">
+                            For public companies, financial reporting and internal control requirements
+                          </div>
+                        </RadioGroup>
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -216,7 +264,7 @@ const OnboardingForm: React.FC = () => {
                   name="targetDate"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>SOC 2 Target Date</FormLabel>
+                      <FormLabel>Compliance Target Date</FormLabel>
                       <FormControl>
                         <Input type="date" {...field} />
                       </FormControl>

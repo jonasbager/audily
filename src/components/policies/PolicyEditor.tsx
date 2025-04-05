@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { 
   Card, 
@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
@@ -28,30 +29,65 @@ interface PolicySections {
   [key: string]: string;
 }
 
+// Generic section titles that work for both frameworks
+const sectionTitles = {
+  purpose: 'Purpose and Objectives',
+  scope: 'Scope and Applicability',
+  policy: 'Policy Statement',
+  responsibilities: 'Roles and Responsibilities',
+  compliance: 'Compliance and Enforcement',
+};
+
 // This is mock data - in a real app we would fetch from API
-const policyData = {
-  'access-control': {
-    name: 'Access Control Policy',
-    description: 'This policy establishes the rules and regulations that govern access to company systems and data.',
+const nis2PolicyData = {
+  'risk-assessment': {
+    name: 'Risk Assessment Policy',
+    description: 'This policy establishes guidelines for identifying and assessing cybersecurity risks in accordance with NIS2.',
     sections: {
-      purpose: 'The purpose of this Access Control Policy is to establish rules and regulations that govern access to company systems, data, and resources.',
-      scope: 'This policy applies to all employees, contractors, consultants, temporary staff, and other workers at the company, including all personnel affiliated with third parties.',
-      policy: 'Access to company systems and data will be granted on a need-to-know basis. All users must have unique accounts, and shared accounts are prohibited.\n\nAccess rights are reviewed quarterly and immediately revoked when an employee is terminated.\n\nMulti-factor authentication is required for all systems containing sensitive data.\n\nRemote access to the company network must use secure methods such as VPNs.',
-      responsibilities: 'System Administrators are responsible for implementing technical controls.\n\nManagers are responsible for approving access requests for their direct reports.\n\nThe Security Team is responsible for regular access reviews.',
-      compliance: 'Failure to comply with this policy may result in disciplinary action, up to and including termination of employment.',
+      purpose: 'The purpose of this Risk Assessment Policy is to define methodologies for identifying, evaluating, and documenting cybersecurity risks to essential services.',
+      scope: 'This policy applies to all systems, networks, and data supporting essential services as defined by NIS2.',
+      policy: 'Risk assessments must be conducted at least annually and after any significant changes to infrastructure. The risk assessment must identify threats and vulnerabilities, evaluate current controls, and determine risk likelihood and impact.',
+      responsibilities: 'The CISO is responsible for oversight of the risk assessment program. Business units must contribute to identifying risks relevant to their operations.',
+      compliance: 'Failure to comply with this policy may result in regulatory penalties under NIS2 Article 20.',
     },
     status: 'complete',
+    framework: 'nis2'
   },
+};
+
+const soxPolicyData = {
+  'internal-control': {
+    name: 'Internal Control Framework',
+    description: 'This policy establishes controls to ensure accurate financial reporting in accordance with SOX Section 404.',
+    sections: {
+      purpose: 'The purpose of this Internal Control Framework is to ensure the reliability of financial reporting and the preparation of financial statements.',
+      scope: 'This policy applies to all financial reporting processes and IT systems that support financial operations.',
+      policy: 'All financial reporting processes must have documented controls with clear ownership, testing schedules, and evidence requirements. Control testing must occur quarterly with results reported to the audit committee.',
+      responsibilities: 'The CFO is responsible for the overall internal control framework. Process owners must design, implement and maintain controls within their areas.',
+      compliance: 'Failure to comply with this policy may result in material weaknesses or significant deficiencies in SOX reporting.',
+    },
+    status: 'complete',
+    framework: 'sox'
+  },
+};
+
+// Combine the policy data
+const policyData = {
+  ...nis2PolicyData,
+  ...soxPolicyData,
   // Additional policies would be defined here
 };
 
 // Mock AI-generated text function
-const generatePolicyText = (sectionName: string, policyName: string) => {
+const generatePolicyText = (sectionName: string, policyName: string, framework: string) => {
   return new Promise<string>((resolve) => {
     setTimeout(() => {
       // This is where we would call our AI API
-      const dummyText = `This is an AI-generated ${sectionName} for the ${policyName}. In a real application, this would be generated using OpenAI's GPT-4 API based on company information and compliance requirements.`;
-      resolve(dummyText);
+      const frameworkSpecificText = framework === 'nis2'
+        ? `This is an AI-generated ${sectionName} for the ${policyName} aligned with NIS2 Directive requirements. It covers cybersecurity measures, incident reporting, and risk assessment for essential services.`
+        : `This is an AI-generated ${sectionName} for the ${policyName} aligned with SOX requirements. It focuses on financial reporting controls, documentation standards, and testing procedures.`;
+      
+      resolve(frameworkSpecificText);
     }, 1500);
   });
 };
@@ -60,6 +96,7 @@ const PolicyEditor: React.FC = () => {
   const { policyId } = useParams<{ policyId: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [selectedFramework, setSelectedFramework] = useState<string>('nis2');
   
   const policy = policyId && policyData[policyId] 
     ? policyData[policyId] 
@@ -74,7 +111,15 @@ const PolicyEditor: React.FC = () => {
           compliance: '',
         },
         status: 'not-started',
+        framework: selectedFramework
       };
+  
+  // Set framework based on policy if policy exists
+  useEffect(() => {
+    if (policyId && policyData[policyId]?.framework) {
+      setSelectedFramework(policyData[policyId].framework);
+    }
+  }, [policyId]);
   
   const [isGenerating, setIsGenerating] = useState(false);
   const [sections, setSections] = useState<PolicySections>(policy.sections);
@@ -91,7 +136,7 @@ const PolicyEditor: React.FC = () => {
   const generateSection = async (sectionName: string) => {
     setIsGenerating(true);
     try {
-      const generated = await generatePolicyText(sectionName, policy.name);
+      const generated = await generatePolicyText(sectionName, policy.name, selectedFramework);
       updateSection(sectionName, generated);
       
       toast({
@@ -133,14 +178,6 @@ const PolicyEditor: React.FC = () => {
     });
   };
   
-  const sectionTitles = {
-    purpose: 'Purpose and Objectives',
-    scope: 'Scope and Applicability',
-    policy: 'Policy Statement',
-    responsibilities: 'Roles and Responsibilities',
-    compliance: 'Compliance and Enforcement',
-  };
-  
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-2">
@@ -149,6 +186,24 @@ const PolicyEditor: React.FC = () => {
         </Button>
         <h1 className="text-2xl font-bold">{policy.name}</h1>
       </div>
+      
+      {!policyId && (
+        <div className="mb-6">
+          <Label htmlFor="framework-select">Compliance Framework</Label>
+          <Select 
+            value={selectedFramework}
+            onValueChange={setSelectedFramework}
+          >
+            <SelectTrigger className="w-[180px] mt-2">
+              <SelectValue placeholder="Select framework" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="nis2">NIS2</SelectItem>
+              <SelectItem value="sox">SOX</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      )}
       
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="mb-6">

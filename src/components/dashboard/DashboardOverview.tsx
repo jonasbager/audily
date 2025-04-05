@@ -114,13 +114,13 @@ const PolicyStatusCard = () => {
         </div>
         <div className="space-y-4">
           {[
-            { name: 'Access Control', complete: true },
+            { name: 'Risk Assessment', complete: true },
             { name: 'Incident Response', complete: true },
-            { name: 'Password Management', complete: true },
+            { name: 'Supply Chain Security', complete: true },
             { name: 'Business Continuity', complete: true },
-            { name: 'Change Management', complete: false },
-            { name: 'Risk Assessment', complete: false },
-            { name: 'Vendor Management', complete: false },
+            { name: 'Security Measures', complete: false },
+            { name: 'Vulnerability Management', complete: false },
+            { name: 'Governance Framework', complete: false },
           ].map((policy) => (
             <div key={policy.name} className="flex justify-between items-center">
               <div className="text-sm">{policy.name}</div>
@@ -155,8 +155,8 @@ const RiskCard = () => {
       <CardContent>
         <div className="space-y-4">
           {[
-            { name: 'Missing MFA for admin accounts', level: 'High' },
-            { name: 'Incomplete offboarding process', level: 'Medium' },
+            { name: 'Missing MFA for privileged accounts', level: 'High' },
+            { name: 'Incomplete supply chain security controls', level: 'Medium' },
             { name: 'No security awareness training', level: 'Medium' },
           ].map((risk, index) => (
             <div key={index} className="flex justify-between items-center p-3 bg-secondary rounded-md">
@@ -186,10 +186,10 @@ const NextActionCard = () => {
       </CardHeader>
       <CardContent>
         <div className="p-4 bg-primary/10 rounded-md">
-          <h4 className="font-medium mb-2">Complete Access Control Matrix</h4>
+          <h4 className="font-medium mb-2">Complete Security Measures Documentation</h4>
           <p className="text-sm text-muted-foreground mb-4">
-            Document who has access to which systems and what level of permissions they have.
-            This is required for SOC 2 Common Criteria CC6.3.
+            Document the security measures implemented across your organization.
+            This is required for NIS2 Article 21 compliance or SOX Section 404.
           </p>
           <Link 
             to="/tasks" 

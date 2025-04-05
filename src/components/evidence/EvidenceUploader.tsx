@@ -32,6 +32,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 interface EvidenceFile {
   id: string;
@@ -40,20 +47,22 @@ interface EvidenceFile {
   size: string;
   uploadDate: string;
   aiLabel?: string;
-  relatedTask?: string;
-  controlReference?: string;
+  relatedRequirement?: string;
+  framework: 'nis2' | 'sox';
+  referenceId?: string;
 }
 
 const mockEvidence: EvidenceFile[] = [
   {
     id: '1',
-    name: 'password_policy_implementation.pdf',
+    name: 'security_measures_implementation.pdf',
     type: 'pdf',
     size: '1.2 MB',
     uploadDate: '2025-04-01',
-    aiLabel: 'Password Policy Implementation',
-    relatedTask: 'Implement Password Policy',
-    controlReference: 'CC6.1',
+    aiLabel: 'Security Measures Implementation',
+    relatedRequirement: 'Implement Security Measures',
+    framework: 'nis2',
+    referenceId: 'NIS2-21',
   },
   {
     id: '2',
@@ -62,18 +71,20 @@ const mockEvidence: EvidenceFile[] = [
     size: '0.8 MB',
     uploadDate: '2025-04-02',
     aiLabel: 'Multi-Factor Authentication Configuration',
-    relatedTask: 'Configure MFA for Admin Accounts',
-    controlReference: 'CC6.1, CC6.3',
+    relatedRequirement: 'Configure MFA for Admin Accounts',
+    framework: 'nis2',
+    referenceId: 'NIS2-18, NIS2-21',
   },
   {
     id: '3',
-    name: 'employee_training_records_q1.xlsx',
+    name: 'financial_controls_matrix_q1.xlsx',
     type: 'spreadsheet',
     size: '2.4 MB',
     uploadDate: '2025-03-15',
-    aiLabel: 'Security Awareness Training Records',
-    relatedTask: 'Conduct Security Training',
-    controlReference: 'CC2.2',
+    aiLabel: 'Financial Controls Testing Results',
+    relatedRequirement: 'Document Internal Controls',
+    framework: 'sox',
+    referenceId: 'SOX-404',
   },
 ];
 
@@ -84,6 +95,7 @@ const EvidenceUploader: React.FC = () => {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [selectedFile, setSelectedFile] = useState<EvidenceFile | null>(null);
   const [showFileDetail, setShowFileDetail] = useState(false);
+  const [selectedFramework, setSelectedFramework] = useState<'nis2' | 'sox'>('nis2');
   
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = e.target.files;
@@ -107,6 +119,7 @@ const EvidenceUploader: React.FC = () => {
             size: `${(selectedFiles[0].size / (1024 * 1024)).toFixed(1)} MB`,
             uploadDate: new Date().toISOString().split('T')[0],
             aiLabel: 'Analyzing...',
+            framework: selectedFramework
           };
           
           setFiles(prev => [newFile, ...prev]);
@@ -118,9 +131,13 @@ const EvidenceUploader: React.FC = () => {
                 file.id === newFile.id 
                   ? {
                       ...file,
-                      aiLabel: 'Access Control Configuration',
-                      relatedTask: 'Complete Access Control Matrix',
-                      controlReference: 'CC6.3, CC6.1',
+                      aiLabel: selectedFramework === 'nis2' 
+                        ? 'Security Measures Documentation' 
+                        : 'Financial Control Evidence',
+                      relatedRequirement: selectedFramework === 'nis2'
+                        ? 'Document Security Measures'
+                        : 'Document Internal Controls',
+                      referenceId: selectedFramework === 'nis2' ? 'NIS2-21' : 'SOX-404',
                     }
                   : file
               )
@@ -170,10 +187,24 @@ const EvidenceUploader: React.FC = () => {
     }
   };
 
+  const filteredFiles = selectedFramework ? files.filter(file => file.framework === selectedFramework) : files;
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">Evidence Repository</h1>
+        <Select 
+          value={selectedFramework}
+          onValueChange={(val: 'nis2' | 'sox') => setSelectedFramework(val)}
+        >
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Filter by framework" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="nis2">NIS2</SelectItem>
+            <SelectItem value="sox">SOX</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -182,7 +213,7 @@ const EvidenceUploader: React.FC = () => {
             <CardHeader>
               <CardTitle>Upload Evidence</CardTitle>
               <CardDescription>
-                Upload files that demonstrate compliance with SOC 2 controls
+                Upload files that demonstrate compliance with {selectedFramework === 'nis2' ? 'NIS2' : 'SOX'} requirements
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -228,13 +259,13 @@ const EvidenceUploader: React.FC = () => {
             <CardHeader>
               <CardTitle>Uploaded Evidence</CardTitle>
               <CardDescription>
-                {files.length} files in your evidence repository
+                {filteredFiles.length} files in your evidence repository
               </CardDescription>
             </CardHeader>
             <CardContent>
               <ScrollArea className="h-[460px]">
                 <div className="space-y-4">
-                  {files.map(file => (
+                  {filteredFiles.map(file => (
                     <div 
                       key={file.id} 
                       className="flex items-start justify-between p-3 bg-muted rounded-lg"
@@ -252,9 +283,9 @@ const EvidenceUploader: React.FC = () => {
                                 <Bot className="h-3 w-3 mr-1" />
                                 {file.aiLabel}
                               </Badge>
-                              {file.controlReference && (
+                              {file.referenceId && (
                                 <Badge variant="secondary" className="text-xs">
-                                  {file.controlReference}
+                                  {file.referenceId}
                                 </Badge>
                               )}
                             </div>
@@ -280,7 +311,7 @@ const EvidenceUploader: React.FC = () => {
                     </div>
                   ))}
                   
-                  {files.length === 0 && (
+                  {filteredFiles.length === 0 && (
                     <div className="text-center p-6">
                       <AlertCircle className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
                       <p className="text-muted-foreground">No evidence files yet</p>
@@ -300,7 +331,7 @@ const EvidenceUploader: React.FC = () => {
                 AI Evidence Analysis
               </CardTitle>
               <CardDescription>
-                Our AI helps you categorize and link evidence to SOC 2 controls
+                Our AI helps you categorize and link evidence to {selectedFramework === 'nis2' ? 'NIS2' : 'SOX'} requirements
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -321,7 +352,7 @@ const EvidenceUploader: React.FC = () => {
                   </li>
                   <li className="flex gap-2">
                     <span className="flex-shrink-0 h-5 w-5 rounded-full bg-primary/20 flex items-center justify-center text-xs">4</span>
-                    <span>Evidence is linked to relevant controls</span>
+                    <span>Evidence is linked to relevant requirements</span>
                   </li>
                 </ul>
               </div>
@@ -329,21 +360,40 @@ const EvidenceUploader: React.FC = () => {
               <div>
                 <h3 className="font-medium mb-2">Evidence Suggestions</h3>
                 <p className="text-sm text-muted-foreground mb-3">
-                  Based on your SOC 2 checklist, consider uploading:
+                  Based on your {selectedFramework.toUpperCase()} checklist, consider uploading:
                 </p>
                 <ul className="text-sm space-y-3">
-                  <li className="flex gap-2">
-                    <AlertCircle className="h-4 w-4 text-warning flex-shrink-0 mt-0.5" />
-                    <span>Access control matrix for all systems</span>
-                  </li>
-                  <li className="flex gap-2">
-                    <AlertCircle className="h-4 w-4 text-warning flex-shrink-0 mt-0.5" />
-                    <span>Backup and recovery test results</span>
-                  </li>
-                  <li className="flex gap-2">
-                    <AlertCircle className="h-4 w-4 text-warning flex-shrink-0 mt-0.5" />
-                    <span>Vulnerability scan reports</span>
-                  </li>
+                  {selectedFramework === 'nis2' ? (
+                    <>
+                      <li className="flex gap-2">
+                        <AlertCircle className="h-4 w-4 text-warning flex-shrink-0 mt-0.5" />
+                        <span>Security measures documentation</span>
+                      </li>
+                      <li className="flex gap-2">
+                        <AlertCircle className="h-4 w-4 text-warning flex-shrink-0 mt-0.5" />
+                        <span>Incident response testing results</span>
+                      </li>
+                      <li className="flex gap-2">
+                        <AlertCircle className="h-4 w-4 text-warning flex-shrink-0 mt-0.5" />
+                        <span>Supply chain security assessments</span>
+                      </li>
+                    </>
+                  ) : (
+                    <>
+                      <li className="flex gap-2">
+                        <AlertCircle className="h-4 w-4 text-warning flex-shrink-0 mt-0.5" />
+                        <span>Internal control documentation</span>
+                      </li>
+                      <li className="flex gap-2">
+                        <AlertCircle className="h-4 w-4 text-warning flex-shrink-0 mt-0.5" />
+                        <span>Control testing results</span>
+                      </li>
+                      <li className="flex gap-2">
+                        <AlertCircle className="h-4 w-4 text-warning flex-shrink-0 mt-0.5" />
+                        <span>Segregation of duties matrix</span>
+                      </li>
+                    </>
+                  )}
                 </ul>
               </div>
             </CardContent>
@@ -380,21 +430,21 @@ const EvidenceUploader: React.FC = () => {
                 <h3 className="text-sm font-medium mb-2">AI Analysis</h3>
                 <div className="bg-primary/10 p-3 rounded-md">
                   <p className="text-sm">
-                    This document appears to be {selectedFile?.aiLabel}. It demonstrates compliance with {selectedFile?.controlReference} controls.
+                    This document appears to be {selectedFile?.aiLabel}. It demonstrates compliance with {selectedFile?.referenceId} requirements.
                   </p>
                 </div>
               </div>
               
               <div>
-                <h3 className="text-sm font-medium mb-2">Linked Task</h3>
-                <Badge>{selectedFile?.relatedTask}</Badge>
+                <h3 className="text-sm font-medium mb-2">Linked Requirement</h3>
+                <Badge>{selectedFile?.relatedRequirement}</Badge>
               </div>
               
               <div>
-                <h3 className="text-sm font-medium mb-2">SOC 2 Controls</h3>
+                <h3 className="text-sm font-medium mb-2">Reference ID</h3>
                 <div className="space-y-2">
-                  {selectedFile?.controlReference?.split(', ').map(control => (
-                    <Badge key={control} variant="outline">{control}</Badge>
+                  {selectedFile?.referenceId?.split(', ').map(ref => (
+                    <Badge key={ref} variant="outline">{ref}</Badge>
                   ))}
                 </div>
               </div>
@@ -415,6 +465,10 @@ const EvidenceUploader: React.FC = () => {
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Uploaded:</span>
                     <span>{selectedFile?.uploadDate}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Framework:</span>
+                    <span>{selectedFile?.framework.toUpperCase()}</span>
                   </div>
                 </div>
               </div>

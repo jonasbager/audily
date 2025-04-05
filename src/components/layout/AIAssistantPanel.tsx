@@ -25,22 +25,22 @@ const AIAssistantPanel: React.FC = () => {
   const [messages, setMessages] = useState<{role: 'user' | 'assistant', content: string}[]>([
     {
       role: 'assistant',
-      content: 'Hi there! I\'m your SOC 2 compliance assistant. How can I help you today?'
+      content: 'Hi there! I\'m your compliance assistant. How can I help you with NIS2 or SOX compliance today?'
     }
   ]);
 
   const suggestions: AISuggestion[] = [
     {
       id: '1',
-      content: 'What SOC 2 policies do I need for a startup?'
+      content: 'What policies do I need for NIS2 compliance?'
     },
     {
       id: '2',
-      content: 'How do I create an incident response plan?'
+      content: 'How do I create a SOX internal control framework?'
     },
     {
       id: '3',
-      content: 'Explain what evidence I need for access control'
+      content: 'Explain what evidence I need for NIS2 Article 21'
     }
   ];
 
@@ -55,7 +55,7 @@ const AIAssistantPanel: React.FC = () => {
     setTimeout(() => {
       setMessages(prev => [...prev, { 
         role: 'assistant', 
-        content: `Thanks for your question about "${userInput}". As an AI assistant, I'd recommend starting with documenting your access controls and creating a basic security policy. Let me know if you'd like me to help generate a draft policy.` 
+        content: `Thanks for your question about "${userInput}". As an AI assistant, I'd recommend starting with documenting your security measures and creating a risk assessment process. This applies to both NIS2 and SOX frameworks. Let me know if you'd like me to help generate a draft policy.` 
       }]);
     }, 1000);
     
