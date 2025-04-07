@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
@@ -31,6 +31,7 @@ import {
   Mail, 
   KeyRound 
 } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
 
 const loginSchema = z.object({
   email: z.string().email({ message: 'Please enter a valid email address' }),
@@ -51,6 +52,14 @@ const AuthForm: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { signIn, signUp, isAuthenticated } = useAuth();
+  
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/dashboard');
+    }
+  }, [isAuthenticated, navigate]);
   
   const loginForm = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -70,39 +79,66 @@ const AuthForm: React.FC = () => {
     },
   });
   
-  const onLoginSubmit = (data: LoginFormValues) => {
+  const onLoginSubmit = async (data: LoginFormValues) => {
     setIsLoading(true);
     
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      const { error } = await signIn(data.email, data.password);
       
-      // For demo purposes, we'll just navigate to dashboard
+      if (error) {
+        throw error;
+      }
+      
       toast({
         title: 'Logged in successfully',
         description: 'Welcome back to AuditAI',
       });
       
-      // Navigate to the dashboard or onboarding based on user state
       navigate('/dashboard');
-    }, 1500);
+    } catch (error: any) {
+      toast({
+        title: 'Login failed',
+        description: error.message || 'Something went wrong. Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
   
-  const onSignupSubmit = (data: SignupFormValues) => {
+  const onSignupSubmit = async (data: SignupFormValues) => {
     setIsLoading(true);
     
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      const { error } = await signUp(
+        data.email, 
+        data.password, 
+        { 
+          name: data.name, 
+          company: data.company 
+        }
+      );
+      
+      if (error) {
+        throw error;
+      }
       
       toast({
         title: 'Account created successfully',
-        description: 'Let\'s set up your compliance profile',
+        description: 'Please check your email to confirm your account',
       });
       
-      // Navigate to onboarding
+      // For development, we can automatically log them in since email verification may be disabled
       navigate('/onboarding');
-    }, 1500);
+    } catch (error: any) {
+      toast({
+        title: 'Signup failed',
+        description: error.message || 'Something went wrong. Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
   
   return (
