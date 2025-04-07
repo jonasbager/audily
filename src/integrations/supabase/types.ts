@@ -9,6 +9,27 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      compliance_status: {
+        Row: {
+          id: string
+          progress_percentage: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          progress_percentage?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          progress_percentage?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       evidence: {
         Row: {
           created_at: string
@@ -93,6 +114,51 @@ export type Database = {
           service_name?: string
           status?: string
           token_expires_at?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      onboarding: {
+        Row: {
+          additional_info: string | null
+          company_name: string
+          compliance_framework: string
+          contact_role: string
+          created_at: string
+          id: string
+          profile_complete: boolean
+          systems: string[]
+          target_date: string
+          team_size: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          additional_info?: string | null
+          company_name: string
+          compliance_framework: string
+          contact_role: string
+          created_at?: string
+          id?: string
+          profile_complete?: boolean
+          systems?: string[]
+          target_date: string
+          team_size: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          additional_info?: string | null
+          company_name?: string
+          compliance_framework?: string
+          contact_role?: string
+          created_at?: string
+          id?: string
+          profile_complete?: boolean
+          systems?: string[]
+          target_date?: string
+          team_size?: string
           updated_at?: string
           user_id?: string
         }

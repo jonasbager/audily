@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
@@ -71,7 +70,6 @@ const OnboardingForm: React.FC = () => {
     },
   });
 
-  // Populate form with existing data if available
   useEffect(() => {
     if (existingData) {
       form.reset({
