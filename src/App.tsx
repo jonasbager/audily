@@ -17,6 +17,7 @@ import TasksPage from "./pages/TasksPage";
 import EvidencePage from "./pages/EvidencePage";
 import IntegrationsPage from "./pages/IntegrationsPage";
 import SettingsPage from "./pages/SettingsPage";
+import TeamMembersPage from "./pages/TeamMembersPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -74,6 +75,11 @@ const App = () => (
             <Route path="/settings" element={
               <ProtectedRoute>
                 <SettingsPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/team" element={
+              <ProtectedRoute>
+                <TeamMembersPage />
               </ProtectedRoute>
             } />
             <Route path="*" element={<NotFound />} />

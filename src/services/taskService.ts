@@ -13,6 +13,8 @@ export interface Task {
   assigned_to: string | null;
   created_at: string;
   updated_at: string;
+  assignee_email?: string | null;
+  assignee_name?: string | null;
 }
 
 export interface TaskInput {
@@ -22,18 +24,37 @@ export interface TaskInput {
   status?: string;
   due_date?: string | null;
   assigned_to?: string | null;
-  user_id: string; // Added required user_id field
+  user_id: string;
 }
 
 export async function fetchTasks(): Promise<Task[]> {
   try {
     const { data, error } = await supabase
       .from('tasks')
-      .select('*')
+      .select(`
+        *,
+        team_members (id, email, name, role)
+      `)
       .order('updated_at', { ascending: false });
     
     if (error) throw error;
-    return data || [];
+    
+    // Transform the result to include assignee information directly in the task
+    const transformedData = data.map(task => {
+      let assigneeInfo = null;
+      if (task.team_members) {
+        assigneeInfo = task.team_members;
+      }
+      
+      return {
+        ...task,
+        assignee_email: assigneeInfo?.email,
+        assignee_name: assigneeInfo?.name,
+        team_members: undefined // Remove nested object from the result
+      };
+    });
+    
+    return transformedData || [];
   } catch (error: any) {
     console.error('Error fetching tasks:', error);
     toast({

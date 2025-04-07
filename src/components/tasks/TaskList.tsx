@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { 
   Card, 
@@ -25,9 +24,9 @@ import {
   User, 
   CalendarClock,
   FileUp,
-  Lightbulb,
   MoreHorizontal,
-  Plus
+  Plus,
+  UserPlus
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -47,6 +46,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { useTasks, useUpdateTask } from '@/hooks/useTasks';
+import { useTeamMembers } from '@/hooks/useTeamMembers';
 import { Task } from '@/services/taskService';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -129,7 +129,8 @@ const TaskStatusBadge: React.FC<{ status: string }> = ({ status }) => {
 
 const TaskItem: React.FC<{ task: Task }> = ({ task }) => {
   const { toast } = useToast();
-  const [showAISuggestion, setShowAISuggestion] = useState(false);
+  const { data: teamMembers } = useTeamMembers();
+  const [showAssignDialog, setShowAssignDialog] = useState(false);
   const updateTaskMutation = useUpdateTask();
   
   const handleMarkAsComplete = () => {
@@ -146,10 +147,31 @@ const TaskItem: React.FC<{ task: Task }> = ({ task }) => {
     });
   };
 
-  // Extract date part from ISO string
+  const handleAssignTask = (memberId: string) => {
+    updateTaskMutation.mutate({
+      id: task.id,
+      updates: { assigned_to: memberId }
+    }, {
+      onSuccess: () => {
+        toast({
+          title: "Task assigned",
+          description: "Task has been successfully assigned.",
+        });
+        setShowAssignDialog(false);
+      }
+    });
+  };
+
   const formatDueDate = (dateString: string | null) => {
     if (!dateString) return 'No due date';
     return new Date(dateString).toLocaleDateString();
+  };
+  
+  const getAssigneeName = () => {
+    if (!task.assigned_to) return 'Unassigned';
+    if (task.assignee_name) return task.assignee_name;
+    if (task.assignee_email) return task.assignee_email;
+    return 'Team Member';
   };
   
   return (
@@ -169,7 +191,7 @@ const TaskItem: React.FC<{ task: Task }> = ({ task }) => {
         <div className="flex flex-wrap gap-4 mb-4">
           <div className="flex items-center gap-2 text-sm">
             <User className="h-4 w-4 text-muted-foreground" />
-            {task.assigned_to || 'Unassigned'}
+            {getAssigneeName()}
           </div>
           {task.due_date && (
             <div className="flex items-center gap-2 text-sm">
@@ -215,6 +237,47 @@ const TaskItem: React.FC<{ task: Task }> = ({ task }) => {
               </DialogFooter>
             </DialogContent>
           </Dialog>
+
+          <Dialog open={showAssignDialog} onOpenChange={setShowAssignDialog}>
+            <DialogTrigger asChild>
+              <Button variant="outline" size="sm">
+                <UserPlus className="h-4 w-4 mr-2" />
+                Assign
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Assign Task</DialogTitle>
+                <DialogDescription>
+                  Assign this task to a team member.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="py-4">
+                <Label htmlFor="assign-to">Assign to</Label>
+                <Select 
+                  defaultValue={task.assigned_to || ""}
+                  onValueChange={handleAssignTask}
+                >
+                  <SelectTrigger className="mt-1">
+                    <SelectValue placeholder="Select team member" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">Unassigned</SelectItem>
+                    {teamMembers?.map(member => (
+                      <SelectItem key={member.id} value={member.id}>
+                        {member.name || member.email}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setShowAssignDialog(false)}>
+                  Cancel
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
           
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -229,10 +292,6 @@ const TaskItem: React.FC<{ task: Task }> = ({ task }) => {
                 <CheckCircle2 className="h-4 w-4 mr-2" />
                 Mark as Complete
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <User className="h-4 w-4 mr-2" />
-                Reassign Task
-              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -246,9 +305,7 @@ const TaskList: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState('all');
   const { data: tasks, isLoading, error } = useTasks();
   
-  // Filter tasks based on selected filters
   const filteredTasks = tasks?.filter(task => {
-    // For now we don't have categories in our tasks, so we'll skip category filtering
     const matchesStatus = statusFilter === 'all' || task.status === statusFilter;
     return matchesStatus;
   }) || [];
