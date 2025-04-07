@@ -12,6 +12,7 @@ import OnboardingPage from "./pages/OnboardingPage";
 import DashboardPage from "./pages/DashboardPage";
 import PoliciesPage from "./pages/PoliciesPage";
 import PolicyEditorPage from "./pages/PolicyEditorPage";
+import NewPolicyPage from "./pages/NewPolicyPage";
 import TasksPage from "./pages/TasksPage";
 import EvidencePage from "./pages/EvidencePage";
 import IntegrationsPage from "./pages/IntegrationsPage";
@@ -43,6 +44,11 @@ const App = () => (
             <Route path="/policies" element={
               <ProtectedRoute>
                 <PoliciesPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/policies/new" element={
+              <ProtectedRoute>
+                <NewPolicyPage />
               </ProtectedRoute>
             } />
             <Route path="/policies/:policyId" element={
