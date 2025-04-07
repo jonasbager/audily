@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
   Card, 
   CardHeader, 
@@ -26,9 +26,9 @@ import {
   KeyRound, 
   Save,
   UserPlus,
-  Trash2
+  Users
 } from 'lucide-react';
-import { Avatar } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import {
   Select,
@@ -38,30 +38,182 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
+import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
+import TeamMembers from '@/components/team/TeamMembers';
+
+interface UserProfile {
+  full_name: string | null;
+  company_name: string | null;
+  role?: string | null;
+  timezone?: string | null;
+}
+
+interface CompanyInfo {
+  company_name: string | null;
+  industry?: string | null;
+  size?: string | null;
+  auditType?: string | null;
+  auditDate?: string | null;
+  auditor?: string | null;
+}
 
 const SettingsPage: React.FC = () => {
   const { toast } = useToast();
-  
-  const handleSaveProfile = () => {
-    toast({
-      title: 'Profile updated',
-      description: 'Your profile has been successfully updated.',
-    });
+  const { user } = useAuth();
+  const [profile, setProfile] = useState<UserProfile>({
+    full_name: null,
+    company_name: null,
+    role: 'Admin',
+    timezone: 'America/Los_Angeles'
+  });
+  const [companyInfo, setCompanyInfo] = useState<CompanyInfo>({
+    company_name: null,
+    industry: 'software',
+    size: '11-50',
+    auditType: 'type1',
+    auditDate: '2025-06-30',
+    auditor: ''
+  });
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      if (!user) return;
+
+      try {
+        setIsLoading(true);
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+
+        if (error) throw error;
+
+        const { data: onboardingData, error: onboardingError } = await supabase
+          .from('onboarding')
+          .select('*')
+          .eq('user_id', user.id)
+          .maybeSingle();
+
+        if (onboardingError) console.error("Error fetching onboarding data:", onboardingError);
+
+        if (data) {
+          setProfile({
+            full_name: data.full_name || user.email?.split('@')[0] || null,
+            company_name: data.company_name || null,
+            role: 'Admin',
+            timezone: 'America/Los_Angeles'
+          });
+        }
+
+        if (onboardingData) {
+          setCompanyInfo({
+            company_name: onboardingData.company_name,
+            industry: 'software',
+            size: onboardingData.team_size,
+            auditType: 'type1',
+            auditDate: onboardingData.target_date,
+            auditor: ''
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching user profile data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchUserProfile();
+  }, [user]);
+
+  const handleSaveProfile = async () => {
+    if (!user) return;
+
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          full_name: profile.full_name,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', user.id);
+
+      if (error) throw error;
+
+      toast({
+        title: 'Profile updated',
+        description: 'Your profile has been successfully updated.',
+      });
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      toast({
+        title: 'Error updating profile',
+        description: 'There was a problem updating your profile.',
+        variant: 'destructive'
+      });
+    }
   };
   
-  const handleSaveCompany = () => {
-    toast({
-      title: 'Company settings updated',
-      description: 'Company information has been successfully updated.',
-    });
+  const handleSaveCompany = async () => {
+    if (!user) return;
+
+    try {
+      const { data: existingData, error: checkError } = await supabase
+        .from('onboarding')
+        .select('id')
+        .eq('user_id', user.id)
+        .maybeSingle();
+      
+      if (checkError) throw checkError;
+
+      let updateError;
+      
+      if (existingData) {
+        const { error } = await supabase
+          .from('onboarding')
+          .update({
+            company_name: companyInfo.company_name,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', existingData.id);
+          
+        updateError = error;
+      }
+
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .update({
+          company_name: companyInfo.company_name,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', user.id);
+
+      if (updateError || profileError) throw updateError || profileError;
+
+      toast({
+        title: 'Company settings updated',
+        description: 'Company information has been successfully updated.',
+      });
+    } catch (error) {
+      console.error("Error updating company settings:", error);
+      toast({
+        title: 'Error updating company settings',
+        description: 'There was a problem updating company information.',
+        variant: 'destructive'
+      });
+    }
+  };
+
+  const getInitials = (name: string | null): string => {
+    if (!name) return 'U';
+    return name.split(' ').map(n => n[0]).join('').toUpperCase();
   };
   
-  const handleInviteUser = () => {
-    toast({
-      title: 'Invitation sent',
-      description: 'An invitation has been sent to the new team member.',
-    });
-  };
+  if (isLoading) {
+    return <div className="p-6">Loading settings...</div>;
+  }
   
   return (
     <div className="space-y-6">
@@ -93,9 +245,9 @@ const SettingsPage: React.FC = () => {
             <CardContent className="space-y-6">
               <div className="flex items-center gap-4">
                 <Avatar className="h-16 w-16">
-                  <div className="bg-primary text-primary-foreground h-full w-full flex items-center justify-center text-xl font-semibold">
-                    SJ
-                  </div>
+                  <AvatarFallback className="bg-primary text-primary-foreground h-full w-full flex items-center justify-center text-xl font-semibold">
+                    {getInitials(profile.full_name)}
+                  </AvatarFallback>
                 </Avatar>
                 <div>
                   <Button variant="outline" size="sm">Change Avatar</Button>
@@ -110,19 +262,35 @@ const SettingsPage: React.FC = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="fullName">Full Name</Label>
-                  <Input id="fullName" defaultValue="Sarah Johnson" />
+                  <Input 
+                    id="fullName" 
+                    value={profile.full_name || ''} 
+                    onChange={(e) => setProfile({...profile, full_name: e.target.value})}
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
-                  <Input id="email" type="email" defaultValue="sarah@example.com" />
+                  <Input 
+                    id="email" 
+                    type="email" 
+                    value={user?.email || ''}
+                    disabled
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="role">Role</Label>
-                  <Input id="role" defaultValue="CTO" />
+                  <Input 
+                    id="role" 
+                    value={profile.role || ''} 
+                    onChange={(e) => setProfile({...profile, role: e.target.value})}
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="timezone">Timezone</Label>
-                  <Select defaultValue="America/Los_Angeles">
+                  <Select 
+                    value={profile.timezone || 'America/Los_Angeles'} 
+                    onValueChange={(value) => setProfile({...profile, timezone: value})}
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Select timezone" />
                     </SelectTrigger>
@@ -160,11 +328,18 @@ const SettingsPage: React.FC = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="companyName">Company Name</Label>
-                  <Input id="companyName" defaultValue="Acme Inc." />
+                  <Input 
+                    id="companyName" 
+                    value={companyInfo.company_name || ''} 
+                    onChange={(e) => setCompanyInfo({...companyInfo, company_name: e.target.value})}
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="industry">Industry</Label>
-                  <Select defaultValue="software">
+                  <Select 
+                    value={companyInfo.industry || 'software'} 
+                    onValueChange={(value) => setCompanyInfo({...companyInfo, industry: value})}
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Select industry" />
                     </SelectTrigger>
@@ -179,7 +354,10 @@ const SettingsPage: React.FC = () => {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="size">Company Size</Label>
-                  <Select defaultValue="11-50">
+                  <Select 
+                    value={companyInfo.size || '11-50'} 
+                    onValueChange={(value) => setCompanyInfo({...companyInfo, size: value})}
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Select company size" />
                     </SelectTrigger>
@@ -194,7 +372,10 @@ const SettingsPage: React.FC = () => {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="auditType">SOC 2 Audit Type</Label>
-                  <Select defaultValue="type1">
+                  <Select 
+                    value={companyInfo.auditType || 'type1'} 
+                    onValueChange={(value) => setCompanyInfo({...companyInfo, auditType: value})}
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Select audit type" />
                     </SelectTrigger>
@@ -206,11 +387,21 @@ const SettingsPage: React.FC = () => {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="auditDate">Target Audit Date</Label>
-                  <Input id="auditDate" type="date" defaultValue="2025-06-30" />
+                  <Input 
+                    id="auditDate" 
+                    type="date" 
+                    value={companyInfo.auditDate || ''} 
+                    onChange={(e) => setCompanyInfo({...companyInfo, auditDate: e.target.value})}
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="auditor">Auditor Firm (Optional)</Label>
-                  <Input id="auditor" placeholder="Enter auditor name" />
+                  <Input 
+                    id="auditor" 
+                    placeholder="Enter auditor name" 
+                    value={companyInfo.auditor || ''} 
+                    onChange={(e) => setCompanyInfo({...companyInfo, auditor: e.target.value})}
+                  />
                 </div>
               </div>
             </CardContent>
@@ -224,80 +415,7 @@ const SettingsPage: React.FC = () => {
         </TabsContent>
         
         <TabsContent value="team">
-          <Card className="card-shadow">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <User className="h-5 w-5 text-primary" />
-                Team Members
-              </CardTitle>
-              <CardDescription>
-                Manage team access to your compliance platform
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="space-y-4">
-                {[
-                  { name: 'Sarah Johnson', email: 'sarah@example.com', role: 'Admin (You)' },
-                  { name: 'Michael Chen', email: 'michael@example.com', role: 'Editor' },
-                  { name: 'David Wilson', email: 'david@example.com', role: 'Viewer' },
-                ].map((user, index) => (
-                  <div 
-                    key={index}
-                    className="flex items-center justify-between p-3 bg-muted rounded-lg"
-                  >
-                    <div className="flex items-center gap-3">
-                      <Avatar className="h-8 w-8">
-                        <div className="bg-primary/20 text-primary h-full w-full flex items-center justify-center text-sm font-semibold">
-                          {user.name.split(' ').map(n => n[0]).join('')}
-                        </div>
-                      </Avatar>
-                      <div>
-                        <div className="font-medium">{user.name}</div>
-                        <div className="text-xs text-muted-foreground">{user.email}</div>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Badge variant="outline">{user.role}</Badge>
-                      {user.role !== 'Admin (You)' && (
-                        <Button variant="ghost" size="icon">
-                          <Trash2 className="h-4 w-4 text-destructive" />
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-              
-              <Separator />
-              
-              <div className="space-y-4">
-                <h3 className="text-lg font-medium">Invite New Team Member</h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="space-y-2 col-span-2">
-                    <Label htmlFor="inviteEmail">Email Address</Label>
-                    <Input id="inviteEmail" type="email" placeholder="colleague@example.com" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="inviteRole">Role</Label>
-                    <Select defaultValue="editor">
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select role" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="admin">Admin</SelectItem>
-                        <SelectItem value="editor">Editor</SelectItem>
-                        <SelectItem value="viewer">Viewer</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-                <Button onClick={handleInviteUser}>
-                  <UserPlus className="h-4 w-4 mr-2" />
-                  Send Invitation
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+          <TeamMembers />
         </TabsContent>
         
         <TabsContent value="notifications">
