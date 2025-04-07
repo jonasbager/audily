@@ -11,24 +11,66 @@ export const useAuth = () => {
   }
 
   const signIn = async (email: string, password: string) => {
-    return await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    try {
+      const response = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      
+      return response;
+    } catch (error) {
+      console.error('Error during sign in:', error);
+      throw error;
+    }
   };
 
   const signUp = async (email: string, password: string, metadata: { name: string; company: string }) => {
-    return await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: metadata
-      }
-    });
+    try {
+      const response = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: metadata
+        }
+      });
+      
+      return response;
+    } catch (error) {
+      console.error('Error during sign up:', error);
+      throw error;
+    }
   };
 
   const signOut = async () => {
-    return await supabase.auth.signOut();
+    try {
+      const response = await supabase.auth.signOut();
+      return response;
+    } catch (error) {
+      console.error('Error during sign out:', error);
+      throw error;
+    }
+  };
+
+  const refreshSession = async () => {
+    try {
+      const { data, error } = await supabase.auth.refreshSession();
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      console.error('Error refreshing session:', error);
+      throw error;
+    }
+  };
+
+  const getSession = async () => {
+    try {
+      const { data, error } = await supabase.auth.getSession();
+      if (error) throw error;
+      return data.session;
+    } catch (error) {
+      console.error('Error getting session:', error);
+      throw error;
+    }
   };
 
   return {
@@ -36,5 +78,7 @@ export const useAuth = () => {
     signIn,
     signUp,
     signOut,
+    refreshSession,
+    getSession
   };
 };
