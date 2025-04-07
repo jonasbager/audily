@@ -36,13 +36,13 @@ const TaskStatusCard: React.FC = () => {
     ];
   }, [tasks]);
 
-  // Improved rendering of label for better responsiveness
+  // Improved rendering of label for better readability
   const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, index }) => {
     // Don't render labels for small segments or when percent is 0
     if (percent < 0.05 || percent === 0) return null;
     
     // Calculate position for the label - moved slightly outward for clarity
-    const radius = innerRadius + (outerRadius - innerRadius) * 0.6;
+    const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
     const x = cx + radius * Math.cos(-midAngle * Math.PI / 180);
     const y = cy + radius * Math.sin(-midAngle * Math.PI / 180);
     
@@ -53,7 +53,7 @@ const TaskStatusCard: React.FC = () => {
         fill="#ffffff" 
         textAnchor="middle" 
         dominantBaseline="central"
-        fontSize={12}
+        fontSize={14}
         fontWeight={600}
       >
         {`${(percent * 100).toFixed(0)}%`}
@@ -79,8 +79,8 @@ const TaskStatusCard: React.FC = () => {
                 cy="50%"
                 labelLine={false}
                 label={renderCustomizedLabel}
-                outerRadius={80}
-                innerRadius={50}
+                outerRadius={65}
+                innerRadius={40}
                 fill="#8884d8"
                 dataKey="value"
                 paddingAngle={2}
