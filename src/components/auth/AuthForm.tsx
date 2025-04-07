@@ -29,11 +29,9 @@ import {
   LogIn, 
   UserPlus, 
   Mail, 
-  KeyRound,
-  AlertCircle 
+  KeyRound 
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 
 const loginSchema = z.object({
   email: z.string().email({ message: 'Please enter a valid email address' }),
@@ -52,7 +50,6 @@ type SignupFormValues = z.infer<typeof signupSchema>;
 
 const AuthForm: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const [authError, setAuthError] = useState<string | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
   const { signIn, signUp, isAuthenticated } = useAuth();
@@ -84,7 +81,6 @@ const AuthForm: React.FC = () => {
   
   const onLoginSubmit = async (data: LoginFormValues) => {
     setIsLoading(true);
-    setAuthError(null);
     
     try {
       const { error } = await signIn(data.email, data.password);
@@ -100,9 +96,6 @@ const AuthForm: React.FC = () => {
       
       navigate('/dashboard');
     } catch (error: any) {
-      console.error('Login error:', error);
-      setAuthError(error.message || 'Failed to log in. Please check your credentials and try again.');
-      
       toast({
         title: 'Login failed',
         description: error.message || 'Something went wrong. Please try again.',
@@ -115,7 +108,6 @@ const AuthForm: React.FC = () => {
   
   const onSignupSubmit = async (data: SignupFormValues) => {
     setIsLoading(true);
-    setAuthError(null);
     
     try {
       const { error } = await signUp(
@@ -136,12 +128,9 @@ const AuthForm: React.FC = () => {
         description: 'Please check your email to confirm your account',
       });
       
-      // For development, we can direct them to onboarding
+      // For development, we can automatically log them in since email verification may be disabled
       navigate('/onboarding');
     } catch (error: any) {
-      console.error('Signup error:', error);
-      setAuthError(error.message || 'Failed to create account. This email might already be in use.');
-      
       toast({
         title: 'Signup failed',
         description: error.message || 'Something went wrong. Please try again.',
@@ -166,13 +155,6 @@ const AuthForm: React.FC = () => {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        {authError && (
-          <Alert variant="destructive" className="mb-4">
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>{authError}</AlertDescription>
-          </Alert>
-        )}
-        
         <Tabs defaultValue="login">
           <TabsList className="grid w-full grid-cols-2 mb-4">
             <TabsTrigger value="login">Login</TabsTrigger>
@@ -324,13 +306,10 @@ const AuthForm: React.FC = () => {
           </TabsContent>
         </Tabs>
       </CardContent>
-      <CardFooter className="flex flex-col space-y-4">
-        <p className="text-sm text-muted-foreground text-center">
+      <CardFooter className="flex justify-center">
+        <p className="text-sm text-muted-foreground">
           By continuing, you agree to our Terms of Service and Privacy Policy
         </p>
-        <div className="text-xs text-muted-foreground text-center">
-          For development purposes, email verification is not required.
-        </div>
       </CardFooter>
     </Card>
   );

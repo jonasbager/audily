@@ -2,13 +2,9 @@
 import React from 'react';
 import AuthForm from '@/components/auth/AuthForm';
 import { Shield } from 'lucide-react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 const AuthPage: React.FC = () => {
-  const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-  const defaultTab = queryParams.get('tab') || 'login';
-  
   return (
     <div className="min-h-screen flex bg-muted p-0">
       {/* Left Side - Brand */}
