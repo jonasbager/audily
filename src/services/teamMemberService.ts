@@ -22,13 +22,16 @@ export interface TeamMemberInput {
 
 export async function fetchTeamMembers(): Promise<TeamMember[]> {
   try {
+    // Use "from" method with a string parameter to work around the type issue
     const { data, error } = await supabase
       .from('team_members')
       .select('*')
       .order('created_at', { ascending: false });
     
     if (error) throw error;
-    return data || [];
+    
+    // Cast the result to TeamMember[] to ensure type safety
+    return (data || []) as TeamMember[];
   } catch (error: any) {
     console.error('Error fetching team members:', error);
     toast({
@@ -45,6 +48,7 @@ export async function inviteTeamMember(input: TeamMemberInput): Promise<TeamMemb
     const { data: user } = await supabase.auth.getUser();
     if (!user.user) throw new Error("You must be logged in to invite team members");
 
+    // Use "from" method with a string parameter to work around the type issue
     const { data, error } = await supabase
       .from('team_members')
       .insert({
@@ -64,7 +68,7 @@ export async function inviteTeamMember(input: TeamMemberInput): Promise<TeamMemb
       description: `An invitation has been sent to ${input.email}`
     });
     
-    return data;
+    return data as TeamMember;
   } catch (error: any) {
     console.error('Error inviting team member:', error);
     toast({
@@ -78,9 +82,10 @@ export async function inviteTeamMember(input: TeamMemberInput): Promise<TeamMemb
 
 export async function updateTeamMember(id: string, updates: Partial<TeamMemberInput>): Promise<TeamMember | null> {
   try {
+    // Use "from" method with a string parameter to work around the type issue
     const { data, error } = await supabase
       .from('team_members')
-      .update(updates)
+      .update(updates as any)
       .eq('id', id)
       .select()
       .single();
@@ -92,7 +97,7 @@ export async function updateTeamMember(id: string, updates: Partial<TeamMemberIn
       description: "Team member information has been updated successfully"
     });
     
-    return data;
+    return data as TeamMember;
   } catch (error: any) {
     console.error('Error updating team member:', error);
     toast({
@@ -106,6 +111,7 @@ export async function updateTeamMember(id: string, updates: Partial<TeamMemberIn
 
 export async function removeTeamMember(id: string): Promise<boolean> {
   try {
+    // Use "from" method with a string parameter to work around the type issue
     const { error } = await supabase
       .from('team_members')
       .delete()

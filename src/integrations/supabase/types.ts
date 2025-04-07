@@ -260,6 +260,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "fk_tasks_assigned_to"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "team_members"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "tasks_policy_id_fkey"
             columns: ["policy_id"]
             isOneToOne: false
@@ -267,6 +274,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      team_members: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          invited_by: string
+          name: string | null
+          role: string
+          status: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          invited_by: string
+          name?: string | null
+          role?: string
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          invited_by?: string
+          name?: string | null
+          role?: string
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
       }
     }
     Views: {
