@@ -38,7 +38,7 @@ export async function fetchOnboardingData(userId: string): Promise<OnboardingDat
       .maybeSingle();
     
     if (error) throw error;
-    return data;
+    return data as OnboardingData | null;
   } catch (error: any) {
     console.error('Error fetching onboarding data:', error);
     toast({
@@ -77,7 +77,7 @@ export async function saveOnboardingData(data: OnboardingInput): Promise<Onboard
         description: "Your compliance profile has been updated"
       });
       
-      return updatedData;
+      return updatedData as OnboardingData;
     } else {
       // Insert new record
       const { data: newData, error } = await supabase
@@ -93,7 +93,7 @@ export async function saveOnboardingData(data: OnboardingInput): Promise<Onboard
         description: "Your compliance profile has been created"
       });
       
-      return newData;
+      return newData as OnboardingData;
     }
   } catch (error: any) {
     console.error('Error saving onboarding data:', error);
