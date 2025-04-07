@@ -22,16 +22,18 @@ export interface TeamMemberInput {
 
 export async function fetchTeamMembers(): Promise<TeamMember[]> {
   try {
-    // Use "from" method with a string parameter to work around the type issue
+    // Use generic type parameter with the supabase query
     const { data, error } = await supabase
-      .from('team_members')
-      .select('*')
-      .order('created_at', { ascending: false });
+      .from("team_members")
+      .select("*")
+      .order('created_at', { ascending: false }) as { 
+        data: TeamMember[] | null; 
+        error: any; 
+      };
     
     if (error) throw error;
     
-    // Cast the result to TeamMember[] to ensure type safety
-    return (data || []) as TeamMember[];
+    return data || [];
   } catch (error: any) {
     console.error('Error fetching team members:', error);
     toast({
@@ -48,9 +50,9 @@ export async function inviteTeamMember(input: TeamMemberInput): Promise<TeamMemb
     const { data: user } = await supabase.auth.getUser();
     if (!user.user) throw new Error("You must be logged in to invite team members");
 
-    // Use "from" method with a string parameter to work around the type issue
+    // Use generic type parameter with the supabase query
     const { data, error } = await supabase
-      .from('team_members')
+      .from("team_members")
       .insert({
         email: input.email,
         role: input.role,
@@ -59,7 +61,10 @@ export async function inviteTeamMember(input: TeamMemberInput): Promise<TeamMemb
         invited_by: user.user.id
       })
       .select()
-      .single();
+      .single() as {
+        data: TeamMember | null;
+        error: any;
+      };
     
     if (error) throw error;
     
@@ -68,7 +73,7 @@ export async function inviteTeamMember(input: TeamMemberInput): Promise<TeamMemb
       description: `An invitation has been sent to ${input.email}`
     });
     
-    return data as TeamMember;
+    return data;
   } catch (error: any) {
     console.error('Error inviting team member:', error);
     toast({
@@ -82,13 +87,16 @@ export async function inviteTeamMember(input: TeamMemberInput): Promise<TeamMemb
 
 export async function updateTeamMember(id: string, updates: Partial<TeamMemberInput>): Promise<TeamMember | null> {
   try {
-    // Use "from" method with a string parameter to work around the type issue
+    // Use generic type parameter with the supabase query
     const { data, error } = await supabase
-      .from('team_members')
-      .update(updates as any)
+      .from("team_members")
+      .update(updates)
       .eq('id', id)
       .select()
-      .single();
+      .single() as {
+        data: TeamMember | null;
+        error: any;
+      };
     
     if (error) throw error;
     
@@ -97,7 +105,7 @@ export async function updateTeamMember(id: string, updates: Partial<TeamMemberIn
       description: "Team member information has been updated successfully"
     });
     
-    return data as TeamMember;
+    return data;
   } catch (error: any) {
     console.error('Error updating team member:', error);
     toast({
@@ -111,11 +119,13 @@ export async function updateTeamMember(id: string, updates: Partial<TeamMemberIn
 
 export async function removeTeamMember(id: string): Promise<boolean> {
   try {
-    // Use "from" method with a string parameter to work around the type issue
+    // Use type assertion for the query
     const { error } = await supabase
-      .from('team_members')
+      .from("team_members")
       .delete()
-      .eq('id', id);
+      .eq('id', id) as {
+        error: any;
+      };
     
     if (error) throw error;
     
