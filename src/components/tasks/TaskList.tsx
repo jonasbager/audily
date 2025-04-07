@@ -49,6 +49,7 @@ import { useTasks, useUpdateTask } from '@/hooks/useTasks';
 import { useTeamMembers } from '@/hooks/useTeamMembers';
 import { Task } from '@/services/taskService';
 import { Skeleton } from '@/components/ui/skeleton';
+import CreateTaskDialog from './CreateTaskDialog';
 
 const CategorySelect = ({ value, onChange }: { value: string; onChange: (value: string) => void }) => {
   const categories = [
@@ -304,6 +305,7 @@ const TaskList: React.FC = () => {
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
   const { data: tasks, isLoading, error } = useTasks();
+  const [createDialogOpen, setCreateDialogOpen] = useState(false);
   
   const filteredTasks = tasks?.filter(task => {
     const matchesStatus = statusFilter === 'all' || task.status === statusFilter;
@@ -354,7 +356,7 @@ const TaskList: React.FC = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">Tasks</h1>
-        <Button>
+        <Button onClick={() => setCreateDialogOpen(true)}>
           <Plus className="h-4 w-4 mr-2" />
           Create New Task
         </Button>
@@ -379,6 +381,11 @@ const TaskList: React.FC = () => {
           </div>
         )}
       </div>
+      
+      <CreateTaskDialog 
+        open={createDialogOpen} 
+        onOpenChange={setCreateDialogOpen} 
+      />
     </div>
   );
 };
