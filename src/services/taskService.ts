@@ -2,37 +2,41 @@
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 
-export interface Policy {
+export interface Task {
   id: string;
+  policy_id: string | null;
+  user_id: string;
   title: string;
   description: string | null;
-  framework: string;
   status: string;
+  due_date: string | null;
+  assigned_to: string | null;
   created_at: string;
   updated_at: string;
-  user_id: string;
 }
 
-export interface PolicyInput {
+export interface TaskInput {
+  policy_id?: string | null;
   title: string;
   description?: string | null;
-  framework: string;
   status?: string;
+  due_date?: string | null;
+  assigned_to?: string | null;
 }
 
-export async function fetchPolicies(): Promise<Policy[]> {
+export async function fetchTasks(): Promise<Task[]> {
   try {
     const { data, error } = await supabase
-      .from('policies')
+      .from('tasks')
       .select('*')
       .order('updated_at', { ascending: false });
     
     if (error) throw error;
     return data || [];
   } catch (error: any) {
-    console.error('Error fetching policies:', error);
+    console.error('Error fetching tasks:', error);
     toast({
-      title: "Error fetching policies",
+      title: "Error fetching tasks",
       description: error.message,
       variant: "destructive"
     });
@@ -40,10 +44,10 @@ export async function fetchPolicies(): Promise<Policy[]> {
   }
 }
 
-export async function fetchPolicyById(id: string): Promise<Policy | null> {
+export async function fetchTaskById(id: string): Promise<Task | null> {
   try {
     const { data, error } = await supabase
-      .from('policies')
+      .from('tasks')
       .select('*')
       .eq('id', id)
       .single();
@@ -51,9 +55,9 @@ export async function fetchPolicyById(id: string): Promise<Policy | null> {
     if (error) throw error;
     return data;
   } catch (error: any) {
-    console.error('Error fetching policy:', error);
+    console.error('Error fetching task:', error);
     toast({
-      title: "Error fetching policy",
+      title: "Error fetching task",
       description: error.message,
       variant: "destructive"
     });
@@ -61,26 +65,26 @@ export async function fetchPolicyById(id: string): Promise<Policy | null> {
   }
 }
 
-export async function createPolicy(policy: PolicyInput): Promise<Policy | null> {
+export async function createTask(task: TaskInput): Promise<Task | null> {
   try {
     const { data, error } = await supabase
-      .from('policies')
-      .insert(policy)
+      .from('tasks')
+      .insert([task])
       .select()
       .single();
     
     if (error) throw error;
     
     toast({
-      title: "Policy created",
-      description: "Your policy has been created successfully"
+      title: "Task created",
+      description: "Your task has been created successfully"
     });
     
     return data;
   } catch (error: any) {
-    console.error('Error creating policy:', error);
+    console.error('Error creating task:', error);
     toast({
-      title: "Error creating policy",
+      title: "Error creating task",
       description: error.message,
       variant: "destructive"
     });
@@ -88,10 +92,10 @@ export async function createPolicy(policy: PolicyInput): Promise<Policy | null> 
   }
 }
 
-export async function updatePolicy(id: string, updates: Partial<PolicyInput>): Promise<Policy | null> {
+export async function updateTask(id: string, updates: Partial<TaskInput>): Promise<Task | null> {
   try {
     const { data, error } = await supabase
-      .from('policies')
+      .from('tasks')
       .update(updates)
       .eq('id', id)
       .select()
@@ -100,15 +104,15 @@ export async function updatePolicy(id: string, updates: Partial<PolicyInput>): P
     if (error) throw error;
     
     toast({
-      title: "Policy updated",
-      description: "Your policy has been updated successfully"
+      title: "Task updated",
+      description: "Your task has been updated successfully"
     });
     
     return data;
   } catch (error: any) {
-    console.error('Error updating policy:', error);
+    console.error('Error updating task:', error);
     toast({
-      title: "Error updating policy",
+      title: "Error updating task",
       description: error.message,
       variant: "destructive"
     });
@@ -116,25 +120,25 @@ export async function updatePolicy(id: string, updates: Partial<PolicyInput>): P
   }
 }
 
-export async function deletePolicy(id: string): Promise<boolean> {
+export async function deleteTask(id: string): Promise<boolean> {
   try {
     const { error } = await supabase
-      .from('policies')
+      .from('tasks')
       .delete()
       .eq('id', id);
     
     if (error) throw error;
     
     toast({
-      title: "Policy deleted",
-      description: "Your policy has been deleted successfully"
+      title: "Task deleted",
+      description: "Your task has been deleted successfully"
     });
     
     return true;
   } catch (error: any) {
-    console.error('Error deleting policy:', error);
+    console.error('Error deleting task:', error);
     toast({
-      title: "Error deleting policy",
+      title: "Error deleting task",
       description: error.message,
       variant: "destructive"
     });

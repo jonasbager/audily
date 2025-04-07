@@ -1,481 +1,275 @@
 
 import React, { useState } from 'react';
-import { 
-  Card, 
-  CardHeader, 
-  CardTitle, 
-  CardDescription, 
-  CardContent, 
-  CardFooter 
-} from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { useToast } from '@/hooks/use-toast';
-import { 
-  Upload, 
-  FileText, 
-  File, 
-  AlertCircle,
-  Bot,
-  Download,
-  X
-} from 'lucide-react';
-import { Progress } from '@/components/ui/progress';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-
-interface EvidenceFile {
-  id: string;
-  name: string;
-  type: string;
-  size: string;
-  uploadDate: string;
-  aiLabel?: string;
-  relatedRequirement?: string;
-  framework: 'nis2' | 'sox';
-  referenceId?: string;
-}
-
-const mockEvidence: EvidenceFile[] = [
-  {
-    id: '1',
-    name: 'security_measures_implementation.pdf',
-    type: 'pdf',
-    size: '1.2 MB',
-    uploadDate: '2025-04-01',
-    aiLabel: 'Security Measures Implementation',
-    relatedRequirement: 'Implement Security Measures',
-    framework: 'nis2',
-    referenceId: 'NIS2-21',
-  },
-  {
-    id: '2',
-    name: 'mfa_config_screenshot.png',
-    type: 'image',
-    size: '0.8 MB',
-    uploadDate: '2025-04-02',
-    aiLabel: 'Multi-Factor Authentication Configuration',
-    relatedRequirement: 'Configure MFA for Admin Accounts',
-    framework: 'nis2',
-    referenceId: 'NIS2-18, NIS2-21',
-  },
-  {
-    id: '3',
-    name: 'financial_controls_matrix_q1.xlsx',
-    type: 'spreadsheet',
-    size: '2.4 MB',
-    uploadDate: '2025-03-15',
-    aiLabel: 'Financial Controls Testing Results',
-    relatedRequirement: 'Document Internal Controls',
-    framework: 'sox',
-    referenceId: 'SOX-404',
-  },
-];
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { toast } from "@/hooks/use-toast";
+import { useEvidence, useCreateEvidence, useUploadEvidenceFile } from '@/hooks/useEvidence';
+import { FileUp, X, Download, Eye, Trash2 } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const EvidenceUploader: React.FC = () => {
-  const { toast } = useToast();
-  const [files, setFiles] = useState<EvidenceFile[]>(mockEvidence);
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const [selectedFile, setSelectedFile] = useState<EvidenceFile | null>(null);
-  const [showFileDetail, setShowFileDetail] = useState(false);
-  const [selectedFramework, setSelectedFramework] = useState<'nis2' | 'sox'>('nis2');
+  const { user } = useAuth();
   
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFiles = e.target.files;
-    if (!selectedFiles || selectedFiles.length === 0) return;
-    
-    // Simulate upload
-    setIsUploading(true);
-    setUploadProgress(0);
-    
-    const interval = setInterval(() => {
-      setUploadProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          setIsUploading(false);
-          
-          // Add the new file(s)
-          const newFile: EvidenceFile = {
-            id: `new-${Date.now()}`,
-            name: selectedFiles[0].name,
-            type: selectedFiles[0].type.split('/')[1] || 'document',
-            size: `${(selectedFiles[0].size / (1024 * 1024)).toFixed(1)} MB`,
-            uploadDate: new Date().toISOString().split('T')[0],
-            aiLabel: 'Analyzing...',
-            framework: selectedFramework
-          };
-          
-          setFiles(prev => [newFile, ...prev]);
-          
-          // Simulate AI analysis
-          setTimeout(() => {
-            setFiles(prev => 
-              prev.map(file => 
-                file.id === newFile.id 
-                  ? {
-                      ...file,
-                      aiLabel: selectedFramework === 'nis2' 
-                        ? 'Security Measures Documentation' 
-                        : 'Financial Control Evidence',
-                      relatedRequirement: selectedFramework === 'nis2'
-                        ? 'Document Security Measures'
-                        : 'Document Internal Controls',
-                      referenceId: selectedFramework === 'nis2' ? 'NIS2-21' : 'SOX-404',
-                    }
-                  : file
-              )
-            );
-            
-            toast({
-              title: 'File analyzed',
-              description: 'AI has labeled and categorized your evidence',
-            });
-          }, 3000);
-          
-          return 100;
-        }
-        return prev + 10;
-      });
-    }, 200);
-    
-    toast({
-      title: 'Upload started',
-      description: `Uploading ${selectedFiles[0].name}`,
-    });
-  };
+  const { data: evidenceList, isLoading } = useEvidence();
+  const createEvidenceMutation = useCreateEvidence();
+  const uploadFileMutation = useUploadEvidenceFile();
   
-  const handleFileDelete = (id: string) => {
-    setFiles(files.filter(file => file.id !== id));
-    toast({
-      title: 'File deleted',
-      description: 'The file has been removed from your evidence',
-    });
-  };
-  
-  const handleFileView = (file: EvidenceFile) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
     setSelectedFile(file);
-    setShowFileDetail(true);
   };
   
-  const getFileIcon = (type: string) => {
-    switch (type) {
-      case 'pdf':
-        return <FileText className="h-6 w-6 text-destructive" />;
-      case 'image':
-        return <File className="h-6 w-6 text-info" />;
-      case 'spreadsheet':
-        return <FileText className="h-6 w-6 text-success" />;
-      default:
-        return <File className="h-6 w-6 text-muted-foreground" />;
+  const handleUpload = async () => {
+    if (!title.trim()) {
+      toast({
+        title: "Missing information",
+        description: "Please provide a title for the evidence",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    if (!selectedFile) {
+      toast({
+        title: "No file selected",
+        description: "Please select a file to upload",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    setIsUploading(true);
+    
+    try {
+      // Upload file to storage
+      const filePath = await uploadFileMutation.mutateAsync(selectedFile);
+      
+      if (filePath) {
+        // Create evidence record
+        await createEvidenceMutation.mutateAsync({
+          title,
+          description: description || null,
+          file_path: filePath,
+          file_type: selectedFile.type,
+          file_size: selectedFile.size,
+          status: 'pending'
+        });
+        
+        // Reset form
+        setTitle('');
+        setDescription('');
+        setSelectedFile(null);
+        
+        toast({
+          title: "Evidence uploaded",
+          description: "Your evidence has been uploaded successfully"
+        });
+      }
+    } catch (error) {
+      console.error("Error uploading evidence:", error);
+    } finally {
+      setIsUploading(false);
     }
   };
-
-  const filteredFiles = selectedFramework ? files.filter(file => file.framework === selectedFramework) : files;
-
+  
+  const formatFileSize = (bytes: number | null | undefined) => {
+    if (!bytes) return 'N/A';
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(1024));
+    return `${(bytes / Math.pow(1024, i)).toFixed(2)} ${sizes[i]}`;
+  };
+  
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString();
+  };
+  
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">Evidence Repository</h1>
-        <Select 
-          value={selectedFramework}
-          onValueChange={(val: 'nis2' | 'sox') => setSelectedFramework(val)}
-        >
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Filter by framework" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="nis2">NIS2</SelectItem>
-            <SelectItem value="sox">SOX</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+      <h1 className="text-2xl font-bold">Evidence Management</h1>
       
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="md:col-span-2">
-          <Card className="card-shadow">
-            <CardHeader>
-              <CardTitle>Upload Evidence</CardTitle>
-              <CardDescription>
-                Upload files that demonstrate compliance with {selectedFramework === 'nis2' ? 'NIS2' : 'SOX'} requirements
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {isUploading ? (
-                  <div className="space-y-4">
-                    <div className="flex justify-between text-sm">
-                      <span>Uploading...</span>
-                      <span>{uploadProgress}%</span>
+      <Card className="card-shadow">
+        <CardHeader>
+          <CardTitle>Upload New Evidence</CardTitle>
+          <CardDescription>
+            Upload supporting documents for your compliance tasks
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 gap-4">
+            <div>
+              <Label htmlFor="title">Title</Label>
+              <Input 
+                id="title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="Evidence title"
+              />
+            </div>
+            
+            <div>
+              <Label htmlFor="description">Description</Label>
+              <Textarea 
+                id="description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Provide details about this evidence"
+                rows={3}
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label>Upload File</Label>
+              <div className="border-2 border-dashed rounded-md p-6">
+                {selectedFile ? (
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-medium">{selectedFile.name}</p>
+                      <p className="text-sm text-muted-foreground">{formatFileSize(selectedFile.size)}</p>
                     </div>
-                    <Progress value={uploadProgress} />
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      onClick={() => setSelectedFile(null)}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
                   </div>
                 ) : (
-                  <div className="border-2 border-dashed rounded-md p-8 text-center">
-                    <Upload className="h-8 w-8 mx-auto mb-4 text-muted-foreground" />
-                    <p className="text-sm text-muted-foreground mb-4">
-                      Drag and drop files here or click to browse
+                  <div className="text-center">
+                    <FileUp className="h-10 w-10 text-muted-foreground mx-auto mb-2" />
+                    <p className="text-sm text-muted-foreground mb-2">
+                      Drag and drop a file here or click to browse
                     </p>
-                    <Button asChild variant="outline" size="sm">
-                      <Label htmlFor="evidence-upload" className="cursor-pointer">
-                        Select Files
-                        <Input 
-                          id="evidence-upload"
-                          type="file"
-                          className="hidden"
-                          onChange={handleFileUpload}
-                          multiple
-                        />
-                      </Label>
+                    <Input
+                      id="file-upload"
+                      type="file"
+                      className="hidden"
+                      onChange={handleFileChange}
+                    />
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => document.getElementById('file-upload')?.click()}
+                    >
+                      Select File
                     </Button>
                   </div>
                 )}
-                
-                <div className="text-xs text-muted-foreground space-y-1">
-                  <p>Supported formats: PDF, DOCX, XLSX, PNG, JPG</p>
-                  <p>Maximum file size: 10MB</p>
-                </div>
               </div>
-            </CardContent>
-          </Card>
-          
-          <Card className="card-shadow mt-6">
-            <CardHeader>
-              <CardTitle>Uploaded Evidence</CardTitle>
-              <CardDescription>
-                {filteredFiles.length} files in your evidence repository
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ScrollArea className="h-[460px]">
-                <div className="space-y-4">
-                  {filteredFiles.map(file => (
-                    <div 
-                      key={file.id} 
-                      className="flex items-start justify-between p-3 bg-muted rounded-lg"
-                    >
-                      <div className="flex gap-3">
-                        {getFileIcon(file.type)}
-                        <div>
-                          <div className="font-medium">{file.name}</div>
-                          <div className="text-xs text-muted-foreground">
-                            {file.size} • Uploaded on {file.uploadDate}
-                          </div>
-                          {file.aiLabel && (
-                            <div className="mt-1 flex flex-wrap gap-1">
-                              <Badge variant="outline" className="text-xs">
-                                <Bot className="h-3 w-3 mr-1" />
-                                {file.aiLabel}
-                              </Badge>
-                              {file.referenceId && (
-                                <Badge variant="secondary" className="text-xs">
-                                  {file.referenceId}
-                                </Badge>
-                              )}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                      <div className="flex gap-1">
-                        <Button 
-                          variant="ghost" 
-                          size="icon" 
-                          onClick={() => handleFileView(file)}
-                        >
-                          <FileText className="h-4 w-4" />
-                        </Button>
-                        <Button 
-                          variant="ghost" 
-                          size="icon" 
-                          onClick={() => handleFileDelete(file.id)}
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                  
-                  {filteredFiles.length === 0 && (
-                    <div className="text-center p-6">
-                      <AlertCircle className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
-                      <p className="text-muted-foreground">No evidence files yet</p>
-                    </div>
-                  )}
-                </div>
-              </ScrollArea>
-            </CardContent>
-          </Card>
-        </div>
-        
-        <div>
-          <Card className="card-shadow sticky top-6">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Bot className="h-5 w-5 text-primary" />
-                AI Evidence Analysis
-              </CardTitle>
-              <CardDescription>
-                Our AI helps you categorize and link evidence to {selectedFramework === 'nis2' ? 'NIS2' : 'SOX'} requirements
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="bg-primary/5 p-4 rounded-lg">
-                <h3 className="font-medium mb-2">How It Works</h3>
-                <ul className="text-sm space-y-2">
-                  <li className="flex gap-2">
-                    <span className="flex-shrink-0 h-5 w-5 rounded-full bg-primary/20 flex items-center justify-center text-xs">1</span>
-                    <span>Upload your evidence files</span>
-                  </li>
-                  <li className="flex gap-2">
-                    <span className="flex-shrink-0 h-5 w-5 rounded-full bg-primary/20 flex items-center justify-center text-xs">2</span>
-                    <span>Our AI analyzes the content</span>
-                  </li>
-                  <li className="flex gap-2">
-                    <span className="flex-shrink-0 h-5 w-5 rounded-full bg-primary/20 flex items-center justify-center text-xs">3</span>
-                    <span>Files are automatically labeled</span>
-                  </li>
-                  <li className="flex gap-2">
-                    <span className="flex-shrink-0 h-5 w-5 rounded-full bg-primary/20 flex items-center justify-center text-xs">4</span>
-                    <span>Evidence is linked to relevant requirements</span>
-                  </li>
-                </ul>
-              </div>
-              
-              <div>
-                <h3 className="font-medium mb-2">Evidence Suggestions</h3>
-                <p className="text-sm text-muted-foreground mb-3">
-                  Based on your {selectedFramework.toUpperCase()} checklist, consider uploading:
-                </p>
-                <ul className="text-sm space-y-3">
-                  {selectedFramework === 'nis2' ? (
-                    <>
-                      <li className="flex gap-2">
-                        <AlertCircle className="h-4 w-4 text-warning flex-shrink-0 mt-0.5" />
-                        <span>Security measures documentation</span>
-                      </li>
-                      <li className="flex gap-2">
-                        <AlertCircle className="h-4 w-4 text-warning flex-shrink-0 mt-0.5" />
-                        <span>Incident response testing results</span>
-                      </li>
-                      <li className="flex gap-2">
-                        <AlertCircle className="h-4 w-4 text-warning flex-shrink-0 mt-0.5" />
-                        <span>Supply chain security assessments</span>
-                      </li>
-                    </>
-                  ) : (
-                    <>
-                      <li className="flex gap-2">
-                        <AlertCircle className="h-4 w-4 text-warning flex-shrink-0 mt-0.5" />
-                        <span>Internal control documentation</span>
-                      </li>
-                      <li className="flex gap-2">
-                        <AlertCircle className="h-4 w-4 text-warning flex-shrink-0 mt-0.5" />
-                        <span>Control testing results</span>
-                      </li>
-                      <li className="flex gap-2">
-                        <AlertCircle className="h-4 w-4 text-warning flex-shrink-0 mt-0.5" />
-                        <span>Segregation of duties matrix</span>
-                      </li>
-                    </>
-                  )}
-                </ul>
-              </div>
-            </CardContent>
-            <CardFooter>
-              <Button className="w-full" variant="outline">
-                View Evidence Guide
-              </Button>
-            </CardFooter>
-          </Card>
-        </div>
-      </div>
-      
-      <Dialog open={showFileDetail} onOpenChange={setShowFileDetail}>
-        <DialogContent className="max-w-3xl">
-          <DialogHeader>
-            <DialogTitle>{selectedFile?.name}</DialogTitle>
-            <DialogDescription>
-              Uploaded on {selectedFile?.uploadDate}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid grid-cols-3 gap-4">
-            <div className="col-span-2 border rounded-md p-4 min-h-[300px] flex items-center justify-center">
-              <div className="text-center">
-                <FileText className="h-12 w-12 mx-auto mb-2 text-muted-foreground" />
-                <p className="text-sm text-muted-foreground">File preview not available</p>
-                <Button variant="outline" size="sm" className="mt-4">
-                  <Download className="h-4 w-4 mr-2" />
-                  Download File
-                </Button>
-              </div>
-            </div>
-            <div className="space-y-4">
-              <div>
-                <h3 className="text-sm font-medium mb-2">AI Analysis</h3>
-                <div className="bg-primary/10 p-3 rounded-md">
-                  <p className="text-sm">
-                    This document appears to be {selectedFile?.aiLabel}. It demonstrates compliance with {selectedFile?.referenceId} requirements.
-                  </p>
-                </div>
-              </div>
-              
-              <div>
-                <h3 className="text-sm font-medium mb-2">Linked Requirement</h3>
-                <Badge>{selectedFile?.relatedRequirement}</Badge>
-              </div>
-              
-              <div>
-                <h3 className="text-sm font-medium mb-2">Reference ID</h3>
-                <div className="space-y-2">
-                  {selectedFile?.referenceId?.split(', ').map(ref => (
-                    <Badge key={ref} variant="outline">{ref}</Badge>
-                  ))}
-                </div>
-              </div>
-              
-              <Separator />
-              
-              <div>
-                <h3 className="text-sm font-medium mb-2">File Details</h3>
-                <div className="space-y-1 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Type:</span>
-                    <span>{selectedFile?.type.toUpperCase()}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Size:</span>
-                    <span>{selectedFile?.size}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Uploaded:</span>
-                    <span>{selectedFile?.uploadDate}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Framework:</span>
-                    <span>{selectedFile?.framework.toUpperCase()}</span>
-                  </div>
-                </div>
-              </div>
+              <p className="text-xs text-muted-foreground">
+                Supported formats: PDF, DOCX, PNG, JPG, XLSX
+              </p>
             </div>
           </div>
-        </DialogContent>
-      </Dialog>
+        </CardContent>
+        <CardFooter>
+          <Button 
+            onClick={handleUpload}
+            disabled={isUploading || !selectedFile}
+          >
+            {isUploading ? 'Uploading...' : 'Upload Evidence'}
+          </Button>
+        </CardFooter>
+      </Card>
+      
+      <Card className="card-shadow">
+        <CardHeader>
+          <CardTitle>Evidence Library</CardTitle>
+          <CardDescription>
+            View and manage your uploaded evidence
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {isLoading ? (
+            <div className="space-y-4">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="flex items-center gap-4">
+                  <Skeleton className="h-6 w-3/4" />
+                  <Skeleton className="h-6 w-1/4" />
+                </div>
+              ))}
+            </div>
+          ) : evidenceList && evidenceList.length > 0 ? (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Title</TableHead>
+                  <TableHead>Uploaded On</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {evidenceList.map((evidence) => (
+                  <TableRow key={evidence.id}>
+                    <TableCell className="font-medium">{evidence.title}</TableCell>
+                    <TableCell>{formatDate(evidence.created_at)}</TableCell>
+                    <TableCell>
+                      <div className={`
+                        inline-flex items-center px-2 py-1 rounded-full text-xs font-medium
+                        ${evidence.status === 'approved' 
+                          ? 'bg-green-100 text-green-800' 
+                          : evidence.status === 'rejected'
+                          ? 'bg-red-100 text-red-800'
+                          : 'bg-yellow-100 text-yellow-800'
+                        }
+                      `}>
+                        {evidence.status.charAt(0).toUpperCase() + evidence.status.slice(1)}
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-right space-x-2">
+                      <Button variant="ghost" size="icon">
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                      <Button variant="ghost" size="icon">
+                        <Download className="h-4 w-4" />
+                      </Button>
+                      <Button variant="ghost" size="icon">
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          ) : (
+            <div className="text-center py-10 text-muted-foreground">
+              No evidence uploaded yet. Use the form above to upload your first piece of evidence.
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 };
