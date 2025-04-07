@@ -36,24 +36,28 @@ const TaskStatusCard: React.FC = () => {
     ];
   }, [tasks]);
 
-  // Improved rendering of label for better readability
-  const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, index }) => {
+  // Modified label renderer to position labels outside the chart
+  const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, index, name }) => {
     // Don't render labels for small segments or when percent is 0
     if (percent < 0.05 || percent === 0) return null;
     
-    // Calculate position for the label - moved slightly outward for clarity
-    const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
-    const x = cx + radius * Math.cos(-midAngle * Math.PI / 180);
-    const y = cy + radius * Math.sin(-midAngle * Math.PI / 180);
+    // Calculate position for the label - placing it outside the chart
+    const RADIAN = Math.PI / 180;
+    const radius = outerRadius * 1.2;
+    const x = cx + radius * Math.cos(-midAngle * RADIAN);
+    const y = cy + radius * Math.sin(-midAngle * RADIAN);
+    
+    // Determine text anchor based on angle
+    const textAnchor = x > cx ? 'start' : 'end';
     
     return (
       <text 
         x={x} 
         y={y} 
-        fill="#ffffff" 
-        textAnchor="middle" 
+        fill={COLORS[index % COLORS.length]} 
+        textAnchor={textAnchor}
         dominantBaseline="central"
-        fontSize={14}
+        fontSize={12}
         fontWeight={600}
       >
         {`${(percent * 100).toFixed(0)}%`}
@@ -72,14 +76,14 @@ const TaskStatusCard: React.FC = () => {
       <CardContent>
         <div className="h-[180px] w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <PieChart margin={{ top: 5, right: 5, bottom: 5, left: 5 }}>
+            <PieChart margin={{ top: 15, right: 15, bottom: 15, left: 15 }}>
               <Pie
                 data={taskData}
                 cx="50%"
                 cy="50%"
-                labelLine={false}
+                labelLine={true}
                 label={renderCustomizedLabel}
-                outerRadius={65}
+                outerRadius={60}
                 innerRadius={40}
                 fill="#8884d8"
                 dataKey="value"
