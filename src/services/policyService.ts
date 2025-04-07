@@ -18,6 +18,7 @@ export interface PolicyInput {
   description?: string | null;
   framework: string;
   status?: string;
+  user_id: string; // Added required user_id field
 }
 
 export async function fetchPolicies(): Promise<Policy[]> {
@@ -65,7 +66,7 @@ export async function createPolicy(policy: PolicyInput): Promise<Policy | null> 
   try {
     const { data, error } = await supabase
       .from('policies')
-      .insert(policy)
+      .insert(policy) // Fixed: pass policy directly, not as array
       .select()
       .single();
     

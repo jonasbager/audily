@@ -24,6 +24,7 @@ export interface EvidenceInput {
   file_type?: string | null;
   file_size?: number | null;
   status?: string;
+  user_id: string; // Added required user_id field
 }
 
 export async function fetchEvidence(): Promise<Evidence[]> {
@@ -71,7 +72,7 @@ export async function createEvidence(evidence: EvidenceInput): Promise<Evidence 
   try {
     const { data, error } = await supabase
       .from('evidence')
-      .insert([evidence])
+      .insert(evidence) // Fixed: pass evidence directly, not as array
       .select()
       .single();
     

@@ -8,6 +8,7 @@ import {
   deleteTask,
   TaskInput
 } from "@/services/taskService";
+import { useAuth } from "@/hooks/useAuth";
 
 export function useTasks() {
   return useQuery({
@@ -26,9 +27,13 @@ export function useTask(id: string | undefined) {
 
 export function useCreateTask() {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
   
   return useMutation({
-    mutationFn: (task: TaskInput) => createTask(task),
+    mutationFn: (task: Omit<TaskInput, "user_id">) => {
+      if (!user) throw new Error("User must be logged in to create tasks");
+      return createTask({ ...task, user_id: user.id });
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
     }

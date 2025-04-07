@@ -22,6 +22,7 @@ export interface TaskInput {
   status?: string;
   due_date?: string | null;
   assigned_to?: string | null;
+  user_id: string; // Added required user_id field
 }
 
 export async function fetchTasks(): Promise<Task[]> {
@@ -69,7 +70,7 @@ export async function createTask(task: TaskInput): Promise<Task | null> {
   try {
     const { data, error } = await supabase
       .from('tasks')
-      .insert([task])
+      .insert(task) // Fixed: pass task directly, not as array
       .select()
       .single();
     

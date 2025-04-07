@@ -28,9 +28,13 @@ export function useEvidenceItem(id: string | undefined) {
 
 export function useCreateEvidence() {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
   
   return useMutation({
-    mutationFn: (evidence: EvidenceInput) => createEvidence(evidence),
+    mutationFn: (evidence: Omit<EvidenceInput, "user_id">) => {
+      if (!user) throw new Error("User must be logged in to create evidence");
+      return createEvidence({ ...evidence, user_id: user.id });
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['evidence'] });
     }

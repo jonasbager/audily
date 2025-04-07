@@ -22,6 +22,7 @@ export interface IntegrationInput {
   refresh_token?: string | null;
   token_expires_at?: string | null;
   status?: string;
+  user_id: string; // Added required user_id field
 }
 
 export async function fetchIntegrations(): Promise<Integration[]> {
@@ -69,7 +70,7 @@ export async function createIntegration(integration: IntegrationInput): Promise<
   try {
     const { data, error } = await supabase
       .from('integrations')
-      .insert([integration])
+      .insert(integration) // Fixed: pass integration directly, not as array
       .select()
       .single();
     

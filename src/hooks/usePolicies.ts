@@ -8,6 +8,7 @@ import {
   deletePolicy,
   PolicyInput
 } from "@/services/policyService";
+import { useAuth } from "@/hooks/useAuth";
 
 export function usePolicies() {
   return useQuery({
@@ -26,9 +27,13 @@ export function usePolicy(id: string | undefined) {
 
 export function useCreatePolicy() {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
   
   return useMutation({
-    mutationFn: (policy: PolicyInput) => createPolicy(policy),
+    mutationFn: (policy: Omit<PolicyInput, "user_id">) => {
+      if (!user) throw new Error("User must be logged in to create policies");
+      return createPolicy({ ...policy, user_id: user.id });
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['policies'] });
     }

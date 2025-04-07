@@ -8,6 +8,7 @@ import {
   deleteIntegration,
   IntegrationInput
 } from "@/services/integrationService";
+import { useAuth } from "@/hooks/useAuth";
 
 export function useIntegrations() {
   return useQuery({
@@ -26,9 +27,13 @@ export function useIntegration(id: string | undefined) {
 
 export function useCreateIntegration() {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
   
   return useMutation({
-    mutationFn: (integration: IntegrationInput) => createIntegration(integration),
+    mutationFn: (integration: Omit<IntegrationInput, "user_id">) => {
+      if (!user) throw new Error("User must be logged in to create integrations");
+      return createIntegration({ ...integration, user_id: user.id });
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['integrations'] });
     }
