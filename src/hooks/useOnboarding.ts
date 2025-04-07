@@ -1,94 +1,50 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { 
-  fetchOnboardingData, 
-  saveOnboardingData, 
-  fetchComplianceStatus, 
-  updateComplianceStatus,
-  OnboardingInput
-} from "@/services/onboardingService";
+import { fetchOnboardingProfile, updateOnboardingProfile } from "@/services/onboardingService";
 import { useAuth } from "@/hooks/useAuth";
-import { toast } from "@/hooks/use-toast";
+import { useTasks } from "@/hooks/useTasks";
 
-export function useOnboardingData() {
+export function useOnboardingProfile() {
   const { user } = useAuth();
   
   return useQuery({
     queryKey: ['onboarding', user?.id],
-    queryFn: async () => {
-      if (!user) {
-        throw new Error("User must be logged in to fetch onboarding data");
-      }
-      const data = await fetchOnboardingData(user.id);
-      return data;
-    },
+    queryFn: fetchOnboardingProfile,
     enabled: !!user,
-    retry: 1,
-    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 }
 
-export function useSaveOnboardingData() {
+export function useUpdateOnboardingProfile() {
   const queryClient = useQueryClient();
-  const { user } = useAuth();
   
   return useMutation({
-    mutationFn: async (data: Omit<OnboardingInput, "user_id">) => {
-      if (!user) {
-        throw new Error("User must be logged in to save onboarding data");
-      }
-      return await saveOnboardingData({ ...data, user_id: user.id });
-    },
+    mutationFn: updateOnboardingProfile,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['onboarding'] });
-      queryClient.invalidateQueries({ queryKey: ['compliance-status'] });
     },
-    onError: (error: any) => {
-      console.error("Error saving onboarding data:", error);
-      toast({
-        title: "Failed to save profile",
-        description: error.message || "An unexpected error occurred",
-        variant: "destructive"
-      });
-    }
   });
 }
 
 export function useComplianceStatus() {
-  const { user } = useAuth();
+  const { data: tasks, isLoading: isTasksLoading } = useTasks();
   
+  // Calculate compliance status based on task completion
   return useQuery({
-    queryKey: ['compliance-status', user?.id],
-    queryFn: async () => {
-      if (!user) return 0;
-      return await fetchComplianceStatus(user.id);
+    queryKey: ['compliance-status'],
+    queryFn: () => {
+      // If no tasks, return a low score
+      if (!tasks || tasks.length === 0) return 0;
+      
+      const totalTasks = tasks.length;
+      const completedTasks = tasks.filter(task => task.status === 'done').length;
+      const inProgressTasks = tasks.filter(task => task.status === 'in_progress').length;
+      
+      // Calculate percentage - completed tasks are worth full points, in-progress are worth half points
+      const percentage = Math.round(((completedTasks + (inProgressTasks * 0.5)) / totalTasks) * 100);
+      
+      // Ensure percentage is between 0 and 100
+      return Math.min(100, Math.max(0, percentage));
     },
-    enabled: !!user,
-    retry: 1
-  });
-}
-
-export function useUpdateComplianceStatus() {
-  const queryClient = useQueryClient();
-  const { user } = useAuth();
-  
-  return useMutation({
-    mutationFn: async (progress: number) => {
-      if (!user) {
-        throw new Error("User must be logged in to update compliance status");
-      }
-      return await updateComplianceStatus(user.id, progress);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['compliance-status'] });
-    },
-    onError: (error: any) => {
-      console.error("Error updating compliance status:", error);
-      toast({
-        title: "Failed to update compliance status",
-        description: error.message || "An unexpected error occurred",
-        variant: "destructive"
-      });
-    }
+    enabled: !isTasksLoading,
   });
 }

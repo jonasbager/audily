@@ -19,7 +19,7 @@ const TaskStatusCard: React.FC = () => {
   const { data: tasks, isLoading } = useTasks();
   
   const taskData = React.useMemo(() => {
-    if (!tasks) return [
+    if (!tasks || tasks.length === 0) return [
       { name: 'Completed', value: 0, color: '#4ade80' },
       { name: 'In Progress', value: 0, color: '#facc15' },
       { name: 'Not Started', value: 0, color: '#f43f5e' },
@@ -29,17 +29,22 @@ const TaskStatusCard: React.FC = () => {
     const inProgress = tasks.filter(task => task.status === 'in_progress').length;
     const notStarted = tasks.filter(task => task.status === 'todo').length;
     
+    // If all values are 0, return a placeholder value to show a gray circle
+    if (completed === 0 && inProgress === 0 && notStarted === 0) {
+      return [{ name: 'No Tasks', value: 1, color: '#e2e8f0' }];
+    }
+    
     return [
       { name: 'Completed', value: completed, color: '#4ade80' },
       { name: 'In Progress', value: inProgress, color: '#facc15' },
       { name: 'Not Started', value: notStarted, color: '#f43f5e' },
-    ];
+    ].filter(item => item.value > 0); // Only show segments with values
   }, [tasks]);
 
   // Modified label renderer to position labels outside the chart
-  const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, index, name }) => {
+  const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, index, name, value }) => {
     // Don't render labels for small segments or when percent is 0
-    if (percent < 0.05 || percent === 0) return null;
+    if (percent < 0.05 || percent === 0 || value === 0) return null;
     
     // Calculate position for the label - placing it outside the chart
     const RADIAN = Math.PI / 180;
@@ -83,14 +88,14 @@ const TaskStatusCard: React.FC = () => {
                 cy="50%"
                 labelLine={true}
                 label={renderCustomizedLabel}
-                outerRadius={60}
-                innerRadius={40}
+                outerRadius={50}
+                innerRadius={30}
                 fill="#8884d8"
                 dataKey="value"
                 paddingAngle={2}
               >
                 {taskData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  <Cell key={`cell-${index}`} fill={entry.color || COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
               <Tooltip 

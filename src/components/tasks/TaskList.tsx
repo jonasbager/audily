@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { 
   Card, 
@@ -26,7 +27,8 @@ import {
   FileUp,
   MoreHorizontal,
   Plus,
-  UserPlus
+  UserPlus,
+  Edit
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -134,18 +136,20 @@ const TaskItem: React.FC<{ task: Task }> = ({ task }) => {
   const { data: teamMembers } = useTeamMembers();
   const [showAssignDialog, setShowAssignDialog] = useState(false);
   const [showEvidenceDialog, setShowEvidenceDialog] = useState(false);
+  const [showStatusDialog, setShowStatusDialog] = useState(false);
   const updateTaskMutation = useUpdateTask();
   
-  const handleMarkAsComplete = () => {
+  const handleStatusChange = (newStatus: string) => {
     updateTaskMutation.mutate({
       id: task.id,
-      updates: { status: 'done' }
+      updates: { status: newStatus }
     }, {
       onSuccess: () => {
         toast({
-          title: "Task updated",
-          description: "Task has been marked as complete.",
+          title: "Status updated",
+          description: `Task status has been updated to ${newStatus}.`,
         });
+        setShowStatusDialog(false);
       }
     });
   };
@@ -205,6 +209,44 @@ const TaskItem: React.FC<{ task: Task }> = ({ task }) => {
         </div>
         
         <div className="flex justify-end gap-2">
+          <Dialog open={showStatusDialog} onOpenChange={setShowStatusDialog}>
+            <DialogTrigger asChild>
+              <Button variant="outline" size="sm">
+                <Edit className="h-4 w-4 mr-2" />
+                Update Status
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Update Task Status</DialogTitle>
+                <DialogDescription>
+                  Select the new status for this task.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="py-4">
+                <Label htmlFor="task-status">Status</Label>
+                <Select
+                  defaultValue={task.status}
+                  onValueChange={handleStatusChange}
+                >
+                  <SelectTrigger className="mt-1">
+                    <SelectValue placeholder="Select status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="todo">To Do</SelectItem>
+                    <SelectItem value="in_progress">In Progress</SelectItem>
+                    <SelectItem value="done">Done</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setShowStatusDialog(false)}>
+                  Cancel
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+
           <Dialog open={showEvidenceDialog} onOpenChange={setShowEvidenceDialog}>
             <DialogTrigger asChild>
               <Button variant="outline" size="sm">
@@ -276,7 +318,7 @@ const TaskItem: React.FC<{ task: Task }> = ({ task }) => {
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleMarkAsComplete}>
+              <DropdownMenuItem onClick={() => handleStatusChange('done')}>
                 <CheckCircle2 className="h-4 w-4 mr-2" />
                 Mark as Complete
               </DropdownMenuItem>
