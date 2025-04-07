@@ -14,7 +14,7 @@ export interface Policy {
 
 export interface PolicyInput {
   title: string;
-  description?: string;
+  description?: string | null;
   framework: string;
   status?: string;
 }
