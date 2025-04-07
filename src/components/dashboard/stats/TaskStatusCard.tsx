@@ -79,8 +79,8 @@ const TaskStatusCard: React.FC = () => {
                 cy="50%"
                 labelLine={false}
                 label={renderCustomizedLabel}
-                outerRadius={({ width, height }) => Math.min(width, height) * 0.35}
-                innerRadius={({ width, height }) => Math.min(width, height) * 0.15}
+                outerRadius={80}
+                innerRadius={50}
                 fill="#8884d8"
                 dataKey="value"
                 paddingAngle={2}
