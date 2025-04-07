@@ -11,17 +11,22 @@ import {
 import { useAuth } from "@/hooks/useAuth";
 
 export function useIntegrations() {
+  const { user } = useAuth();
+  
   return useQuery({
-    queryKey: ['integrations'],
-    queryFn: fetchIntegrations
+    queryKey: ['integrations', user?.id],
+    queryFn: fetchIntegrations,
+    enabled: !!user
   });
 }
 
 export function useIntegration(id: string | undefined) {
+  const { user } = useAuth();
+  
   return useQuery({
     queryKey: ['integration', id],
     queryFn: () => id ? fetchIntegrationById(id) : null,
-    enabled: !!id
+    enabled: !!(id && user)
   });
 }
 

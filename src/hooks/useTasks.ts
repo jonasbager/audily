@@ -11,17 +11,22 @@ import {
 import { useAuth } from "@/hooks/useAuth";
 
 export function useTasks() {
+  const { user } = useAuth();
+  
   return useQuery({
-    queryKey: ['tasks'],
-    queryFn: fetchTasks
+    queryKey: ['tasks', user?.id],
+    queryFn: fetchTasks,
+    enabled: !!user
   });
 }
 
 export function useTask(id: string | undefined) {
+  const { user } = useAuth();
+  
   return useQuery({
     queryKey: ['task', id],
     queryFn: () => id ? fetchTaskById(id) : null,
-    enabled: !!id
+    enabled: !!(id && user)
   });
 }
 

@@ -11,17 +11,22 @@ import {
 import { useAuth } from "@/hooks/useAuth";
 
 export function usePolicies() {
+  const { user } = useAuth();
+  
   return useQuery({
-    queryKey: ['policies'],
-    queryFn: fetchPolicies
+    queryKey: ['policies', user?.id],
+    queryFn: fetchPolicies,
+    enabled: !!user
   });
 }
 
 export function usePolicy(id: string | undefined) {
+  const { user } = useAuth();
+  
   return useQuery({
     queryKey: ['policy', id],
     queryFn: () => id ? fetchPolicyById(id) : null,
-    enabled: !!id
+    enabled: !!(id && user)
   });
 }
 

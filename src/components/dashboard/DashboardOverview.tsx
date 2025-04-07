@@ -1,8 +1,6 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
 import {
   BarChart,
   Bar,
@@ -16,44 +14,32 @@ import {
   CheckCircle2, 
   AlertCircle, 
   Clock, 
-  ChevronRight,
-  ShieldCheck
+  ChevronRight
 } from 'lucide-react';
-
-const ComplianceScoreCard = () => {
-  return (
-    <Card className="card-shadow">
-      <CardHeader className="pb-2">
-        <CardTitle className="flex items-center gap-2 text-lg font-semibold">
-          <ShieldCheck className="h-5 w-5 text-primary" />
-          Overall Readiness
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="flex flex-col gap-4">
-          <div className="flex justify-between items-end">
-            <div className="text-4xl font-bold">67%</div>
-            <div className="text-sm text-muted-foreground">+12% this month</div>
-          </div>
-          <div className="space-y-2">
-            <Progress value={67} className="h-2" />
-            <div className="flex justify-between text-xs text-muted-foreground">
-              <span>Not Ready</span>
-              <span>Ready for Audit</span>
-            </div>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  );
-};
+import DashboardComplianceScore from './DashboardComplianceScore';
+import { usePolicies } from '@/hooks/usePolicies';
+import { useTasks } from '@/hooks/useTasks';
 
 const TaskStatusCard = () => {
-  const tasks = [
-    { name: 'Completed', value: 18, color: 'bg-success' },
-    { name: 'In Progress', value: 7, color: 'bg-warning' },
-    { name: 'Not Started', value: 12, color: 'bg-destructive' },
-  ];
+  const { data: tasks, isLoading } = useTasks();
+  
+  const taskData = React.useMemo(() => {
+    if (!tasks) return [
+      { name: 'Completed', value: 0, color: 'bg-success' },
+      { name: 'In Progress', value: 0, color: 'bg-warning' },
+      { name: 'Not Started', value: 0, color: 'bg-destructive' },
+    ];
+    
+    const completed = tasks.filter(task => task.status === 'completed').length;
+    const inProgress = tasks.filter(task => task.status === 'in_progress').length;
+    const notStarted = tasks.filter(task => task.status === 'todo').length;
+    
+    return [
+      { name: 'Completed', value: completed, color: 'bg-success' },
+      { name: 'In Progress', value: inProgress, color: 'bg-warning' },
+      { name: 'Not Started', value: notStarted, color: 'bg-destructive' },
+    ];
+  }, [tasks]);
 
   return (
     <Card className="card-shadow">
@@ -67,7 +53,7 @@ const TaskStatusCard = () => {
         <div className="h-[160px]">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
-              data={tasks}
+              data={taskData}
               layout="vertical"
               margin={{ top: 0, right: 0, left: 0, bottom: 0 }}
             >
@@ -99,6 +85,33 @@ const TaskStatusCard = () => {
 };
 
 const PolicyStatusCard = () => {
+  const { data: policies, isLoading } = usePolicies();
+  
+  const policyData = React.useMemo(() => {
+    if (!policies) return {
+      complete: 0,
+      total: 0,
+      policies: []
+    };
+    
+    const complete = policies.filter(policy => policy.status === 'complete').length;
+    const total = policies.length;
+    
+    const recentPolicies = [...policies]
+      .sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())
+      .slice(0, 7)
+      .map(policy => ({
+        name: policy.title,
+        complete: policy.status === 'complete'
+      }));
+    
+    return {
+      complete,
+      total,
+      policies: recentPolicies
+    };
+  }, [policies]);
+
   return (
     <Card className="card-shadow">
       <CardHeader className="pb-2">
@@ -109,20 +122,12 @@ const PolicyStatusCard = () => {
       </CardHeader>
       <CardContent>
         <div className="flex justify-between items-center mb-6">
-          <div className="text-2xl font-bold">4/7</div>
+          <div className="text-2xl font-bold">{policyData.complete}/{policyData.total}</div>
           <div className="text-sm text-muted-foreground">Policies Complete</div>
         </div>
         <div className="space-y-4">
-          {[
-            { name: 'Risk Assessment', complete: true },
-            { name: 'Incident Response', complete: true },
-            { name: 'Supply Chain Security', complete: true },
-            { name: 'Business Continuity', complete: true },
-            { name: 'Security Measures', complete: false },
-            { name: 'Vulnerability Management', complete: false },
-            { name: 'Governance Framework', complete: false },
-          ].map((policy) => (
-            <div key={policy.name} className="flex justify-between items-center">
+          {policyData.policies.map((policy, index) => (
+            <div key={index} className="flex justify-between items-center">
               <div className="text-sm">{policy.name}</div>
               {policy.complete ? (
                 <CheckCircle2 className="h-4 w-4 text-success" />
@@ -210,7 +215,7 @@ const DashboardOverview: React.FC = () => {
       <h1 className="text-2xl font-bold">Dashboard</h1>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <ComplianceScoreCard />
+        <DashboardComplianceScore />
         <TaskStatusCard />
       </div>
       

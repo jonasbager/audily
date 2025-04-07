@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
@@ -37,6 +37,8 @@ import {
   RadioGroup,
   RadioGroupItem,
 } from '@/components/ui/radio-group';
+import { useSaveOnboardingData, useOnboardingData } from '@/hooks/useOnboarding';
+import { Loader2 } from 'lucide-react';
 
 const formSchema = z.object({
   companyName: z.string().min(2, { message: 'Company name is required' }),
@@ -53,6 +55,8 @@ type FormValues = z.infer<typeof formSchema>;
 const OnboardingForm: React.FC = () => {
   const [step, setStep] = useState(1);
   const navigate = useNavigate();
+  const { data: existingData, isLoading } = useOnboardingData();
+  const { mutate: saveData, isPending: isSaving } = useSaveOnboardingData();
   
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -66,6 +70,21 @@ const OnboardingForm: React.FC = () => {
       additionalInfo: '',
     },
   });
+
+  // Populate form with existing data if available
+  useEffect(() => {
+    if (existingData) {
+      form.reset({
+        companyName: existingData.company_name,
+        teamSize: existingData.team_size,
+        complianceFramework: existingData.compliance_framework,
+        systems: existingData.systems,
+        targetDate: existingData.target_date,
+        contactRole: existingData.contact_role,
+        additionalInfo: existingData.additional_info || '',
+      });
+    }
+  }, [existingData, form]);
 
   const systemOptions = [
     { id: 'google', label: 'Google Workspace' },
@@ -96,16 +115,32 @@ const OnboardingForm: React.FC = () => {
   };
 
   const onSubmit = (data: FormValues) => {
-    console.log('Form submitted:', data);
-    
-    // In a real app, we would:
-    // 1. Send data to the backend
-    // 2. Generate risk profile with GPT-4
-    // 3. Create customized checklist based on selected compliance framework
-    
-    // For now, simulate success and redirect to dashboard
-    navigate('/dashboard');
+    saveData({
+      company_name: data.companyName,
+      team_size: data.teamSize,
+      compliance_framework: data.complianceFramework,
+      systems: data.systems,
+      target_date: data.targetDate,
+      contact_role: data.contactRole,
+      additional_info: data.additionalInfo,
+      profile_complete: true
+    }, {
+      onSuccess: () => {
+        navigate('/dashboard');
+      }
+    });
   };
+
+  if (isLoading) {
+    return (
+      <Card className="w-full max-w-3xl mx-auto card-shadow">
+        <CardContent className="flex items-center justify-center py-10">
+          <Loader2 className="h-8 w-8 animate-spin text-primary mr-2" />
+          <span>Loading your profile...</span>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="w-full max-w-3xl mx-auto card-shadow">
@@ -341,8 +376,18 @@ const OnboardingForm: React.FC = () => {
               Continue
             </Button>
           ) : (
-            <Button onClick={form.handleSubmit(onSubmit)}>
-              Complete Setup
+            <Button 
+              onClick={form.handleSubmit(onSubmit)}
+              disabled={isSaving}
+            >
+              {isSaving ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  Saving...
+                </>
+              ) : (
+                'Complete Setup'
+              )}
             </Button>
           )}
         </div>
