@@ -36,10 +36,13 @@ const TaskStatusCard: React.FC = () => {
     ];
   }, [tasks]);
 
+  // Improved rendering of label for better responsiveness
   const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, index }) => {
-    if (percent === 0) return null;
+    // Don't render labels for small segments or when percent is 0
+    if (percent < 0.05 || percent === 0) return null;
     
-    const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+    // Calculate position for the label - moved slightly outward for clarity
+    const radius = innerRadius + (outerRadius - innerRadius) * 0.6;
     const x = cx + radius * Math.cos(-midAngle * Math.PI / 180);
     const y = cy + radius * Math.sin(-midAngle * Math.PI / 180);
     
@@ -67,17 +70,17 @@ const TaskStatusCard: React.FC = () => {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="h-[160px]">
+        <div className="h-[180px] w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
+            <PieChart margin={{ top: 5, right: 5, bottom: 5, left: 5 }}>
               <Pie
                 data={taskData}
                 cx="50%"
                 cy="50%"
                 labelLine={false}
                 label={renderCustomizedLabel}
-                outerRadius={70}
-                innerRadius={30}
+                outerRadius={({ width, height }) => Math.min(width, height) * 0.35}
+                innerRadius={({ width, height }) => Math.min(width, height) * 0.15}
                 fill="#8884d8"
                 dataKey="value"
                 paddingAngle={2}
@@ -88,8 +91,22 @@ const TaskStatusCard: React.FC = () => {
               </Pie>
               <Tooltip 
                 formatter={(value, name) => [`${value} tasks`, name]}
+                contentStyle={{ 
+                  backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                  borderRadius: '6px',
+                  boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
+                  border: '1px solid #e2e8f0'
+                }}
               />
-              <Legend layout="horizontal" verticalAlign="bottom" align="center" />
+              <Legend 
+                layout="horizontal" 
+                verticalAlign="bottom" 
+                align="center" 
+                wrapperStyle={{
+                  paddingTop: '10px',
+                  fontSize: '12px'
+                }}
+              />
             </PieChart>
           </ResponsiveContainer>
         </div>
