@@ -13,7 +13,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
     <SidebarProvider>
       <div className="flex min-h-screen w-full">
         <AppSidebar />
-        <main className="flex-1 overflow-y-auto">
+        <main className="flex-1 overflow-y-auto md:ml-64"> {/* Added fixed ml-64 margin to account for sidebar width */}
           <div className="container mx-auto p-6">
             {children}
           </div>

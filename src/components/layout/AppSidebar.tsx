@@ -13,15 +13,17 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { buttonVariants } from '@/components/ui/button';
+import { useAuth } from '@/hooks/useAuth';
 
 interface SidebarLinkProps {
   to: string;
   icon: React.ReactNode;
   label: string;
   isActive?: boolean;
+  onClick?: () => void;
 }
 
-const SidebarLink = ({ to, icon, label, isActive }: SidebarLinkProps) => {
+const SidebarLink = ({ to, icon, label, isActive, onClick }: SidebarLinkProps) => {
   return (
     <Link
       to={to}
@@ -30,6 +32,7 @@ const SidebarLink = ({ to, icon, label, isActive }: SidebarLinkProps) => {
         "justify-start w-full h-10 mb-1 relative",
         isActive && "bg-sidebar-accent text-sidebar-accent-foreground"
       )}
+      onClick={onClick}
     >
       <div className="flex items-center">
         <span className="mr-3">{icon}</span>
@@ -45,8 +48,13 @@ const SidebarLink = ({ to, icon, label, isActive }: SidebarLinkProps) => {
 const AppSidebar = () => {
   const location = useLocation();
   const pathname = location.pathname;
+  const { signOut } = useAuth();
   
   const isActive = (path: string) => pathname === path || pathname.startsWith(`${path}/`);
+  
+  const handleLogout = async () => {
+    await signOut();
+  };
 
   return (
     <div className="flex flex-col h-screen w-64 bg-sidebar border-r border-sidebar-border fixed left-0 top-0 z-10">
@@ -104,10 +112,10 @@ const AppSidebar = () => {
             isActive={isActive('/settings')}
           />
           <SidebarLink 
-            to="/auth" 
+            to="#" 
             icon={<LogOut className="h-5 w-5" />} 
             label="Logout" 
-            isActive={false}
+            onClick={handleLogout}
           />
         </div>
       </div>
