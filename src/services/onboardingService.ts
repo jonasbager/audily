@@ -18,6 +18,7 @@ export interface OnboardingData {
 }
 
 export interface OnboardingInput {
+  user_id: string;
   company_name: string;
   team_size: string;
   compliance_framework: string;
@@ -26,7 +27,6 @@ export interface OnboardingInput {
   contact_role: string;
   additional_info?: string | null;
   profile_complete?: boolean;
-  user_id: string;
 }
 
 export async function fetchOnboardingData(userId: string): Promise<OnboardingData | null> {
