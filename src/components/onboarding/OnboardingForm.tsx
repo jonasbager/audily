@@ -15,8 +15,11 @@ import {
   CardTitle 
 } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { Loader2 } from 'lucide-react';
+import { Loader2, AlertCircle } from 'lucide-react';
 import { useSaveOnboardingData, useOnboardingData } from '@/hooks/useOnboarding';
+import { useAuth } from '@/hooks/useAuth';
+import { toast } from '@/hooks/use-toast';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import PersonalInfoStep from './PersonalInfoStep';
 import SystemsInfoStep from './SystemsInfoStep';
 import AdditionalInfoStep from './AdditionalInfoStep';
@@ -36,7 +39,8 @@ type FormValues = z.infer<typeof formSchema>;
 const OnboardingForm: React.FC = () => {
   const [step, setStep] = useState(1);
   const navigate = useNavigate();
-  const { data: existingData, isLoading } = useOnboardingData();
+  const { user } = useAuth();
+  const { data: existingData, isLoading, error: loadingError } = useOnboardingData();
   const { mutate: saveData, isPending: isSaving } = useSaveOnboardingData();
   
   const form = useForm<FormValues>({
@@ -53,23 +57,46 @@ const OnboardingForm: React.FC = () => {
   });
 
   useEffect(() => {
+    if (!user) {
+      toast({
+        title: 'Authentication required',
+        description: 'Please login to complete your onboarding',
+        variant: 'destructive',
+      });
+      navigate('/auth');
+    }
+  }, [user, navigate]);
+
+  useEffect(() => {
     if (existingData) {
+      // Pre-populate form with existing data from the database
       form.reset({
-        companyName: existingData.company_name,
-        teamSize: existingData.team_size,
-        complianceFramework: existingData.compliance_framework,
-        systems: existingData.systems,
-        targetDate: existingData.target_date,
-        contactRole: existingData.contact_role,
+        companyName: existingData.company_name || '',
+        teamSize: existingData.team_size || '',
+        complianceFramework: existingData.compliance_framework || '',
+        systems: existingData.systems || [],
+        targetDate: existingData.target_date || '',
+        contactRole: existingData.contact_role || '',
         additionalInfo: existingData.additional_info || '',
       });
     }
   }, [existingData, form]);
 
   const nextStep = () => {
-    if (step < 3) {
-      setStep(step + 1);
+    // Validate current step before proceeding
+    let currentFields: string[] = [];
+    
+    if (step === 1) {
+      currentFields = ['companyName', 'teamSize', 'complianceFramework'];
+    } else if (step === 2) {
+      currentFields = ['systems', 'targetDate'];
     }
+    
+    form.trigger(currentFields as any).then((isValid) => {
+      if (isValid && step < 3) {
+        setStep(step + 1);
+      }
+    });
   };
 
   const prevStep = () => {
@@ -79,6 +106,16 @@ const OnboardingForm: React.FC = () => {
   };
 
   const onSubmit = (data: FormValues) => {
+    if (!user) {
+      toast({
+        title: 'Error saving profile',
+        description: 'You must be logged in to save your profile',
+        variant: 'destructive',
+      });
+      navigate('/auth');
+      return;
+    }
+    
     saveData({
       company_name: data.companyName,
       team_size: data.teamSize,
@@ -90,7 +127,18 @@ const OnboardingForm: React.FC = () => {
       profile_complete: true
     }, {
       onSuccess: () => {
+        toast({
+          title: 'Profile completed',
+          description: 'Your compliance profile has been saved',
+        });
         navigate('/dashboard');
+      },
+      onError: (error) => {
+        toast({
+          title: 'Error saving profile',
+          description: error.message || 'An unexpected error occurred',
+          variant: 'destructive',
+        });
       }
     });
   };
@@ -101,6 +149,27 @@ const OnboardingForm: React.FC = () => {
         <CardContent className="flex items-center justify-center py-10">
           <Loader2 className="h-8 w-8 animate-spin text-primary mr-2" />
           <span>Loading your profile...</span>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (loadingError) {
+    return (
+      <Card className="w-full max-w-3xl mx-auto card-shadow">
+        <CardContent className="py-10">
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Error</AlertTitle>
+            <AlertDescription>
+              Failed to load profile data. Please try again later.
+            </AlertDescription>
+          </Alert>
+          <div className="mt-4 flex justify-center">
+            <Button onClick={() => navigate('/auth')}>
+              Return to Login
+            </Button>
+          </div>
         </CardContent>
       </Card>
     );

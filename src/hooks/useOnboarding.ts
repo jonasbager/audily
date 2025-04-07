@@ -8,14 +8,23 @@ import {
   OnboardingInput
 } from "@/services/onboardingService";
 import { useAuth } from "@/hooks/useAuth";
+import { toast } from "@/hooks/use-toast";
 
 export function useOnboardingData() {
   const { user } = useAuth();
   
   return useQuery({
     queryKey: ['onboarding', user?.id],
-    queryFn: () => user ? fetchOnboardingData(user.id) : null,
-    enabled: !!user
+    queryFn: async () => {
+      if (!user) {
+        throw new Error("User must be logged in to fetch onboarding data");
+      }
+      const data = await fetchOnboardingData(user.id);
+      return data;
+    },
+    enabled: !!user,
+    retry: 1,
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 }
 
@@ -24,13 +33,23 @@ export function useSaveOnboardingData() {
   const { user } = useAuth();
   
   return useMutation({
-    mutationFn: (data: Omit<OnboardingInput, "user_id">) => {
-      if (!user) throw new Error("User must be logged in to save onboarding data");
-      return saveOnboardingData({ ...data, user_id: user.id });
+    mutationFn: async (data: Omit<OnboardingInput, "user_id">) => {
+      if (!user) {
+        throw new Error("User must be logged in to save onboarding data");
+      }
+      return await saveOnboardingData({ ...data, user_id: user.id });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['onboarding'] });
       queryClient.invalidateQueries({ queryKey: ['compliance-status'] });
+    },
+    onError: (error: any) => {
+      console.error("Error saving onboarding data:", error);
+      toast({
+        title: "Failed to save profile",
+        description: error.message || "An unexpected error occurred",
+        variant: "destructive"
+      });
     }
   });
 }
@@ -40,8 +59,12 @@ export function useComplianceStatus() {
   
   return useQuery({
     queryKey: ['compliance-status', user?.id],
-    queryFn: () => user ? fetchComplianceStatus(user.id) : 0,
-    enabled: !!user
+    queryFn: async () => {
+      if (!user) return 0;
+      return await fetchComplianceStatus(user.id);
+    },
+    enabled: !!user,
+    retry: 1
   });
 }
 
@@ -50,12 +73,22 @@ export function useUpdateComplianceStatus() {
   const { user } = useAuth();
   
   return useMutation({
-    mutationFn: (progress: number) => {
-      if (!user) throw new Error("User must be logged in to update compliance status");
-      return updateComplianceStatus(user.id, progress);
+    mutationFn: async (progress: number) => {
+      if (!user) {
+        throw new Error("User must be logged in to update compliance status");
+      }
+      return await updateComplianceStatus(user.id, progress);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['compliance-status'] });
+    },
+    onError: (error: any) => {
+      console.error("Error updating compliance status:", error);
+      toast({
+        title: "Failed to update compliance status",
+        description: error.message || "An unexpected error occurred",
+        variant: "destructive"
+      });
     }
   });
 }
