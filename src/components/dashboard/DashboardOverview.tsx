@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -17,6 +18,7 @@ import {
   ChevronRight
 } from 'lucide-react';
 import DashboardComplianceScore from './DashboardComplianceScore';
+import DashboardRecentEvidence from './DashboardRecentEvidence';
 import { usePolicies } from '@/hooks/usePolicies';
 import { useTasks } from '@/hooks/useTasks';
 
@@ -221,10 +223,13 @@ const DashboardOverview: React.FC = () => {
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <PolicyStatusCard />
-        <RiskCard />
+        <DashboardRecentEvidence />
       </div>
       
-      <NextActionCard />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <RiskCard />
+        <NextActionCard />
+      </div>
     </div>
   );
 };
