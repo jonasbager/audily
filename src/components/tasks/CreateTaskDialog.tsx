@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { DatePicker } from '@/components/ui/date-picker'; // Assuming you have a date picker component
+import { DatePicker } from '@/components/ui/date-picker';
 import { useCreateTask } from '@/hooks/useTasks';
 import { format } from 'date-fns';
 import { Plus } from 'lucide-react';
@@ -14,16 +14,27 @@ import { Plus } from 'lucide-react';
 interface CreateTaskDialogProps {
   onSuccess?: () => void;
   trigger?: React.ReactNode;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
-const CreateTaskDialog: React.FC<CreateTaskDialogProps> = ({ onSuccess, trigger }) => {
-  const [open, setOpen] = useState(false);
+const CreateTaskDialog: React.FC<CreateTaskDialogProps> = ({ 
+  onSuccess, 
+  trigger, 
+  open: controlledOpen, 
+  onOpenChange: setControlledOpen 
+}) => {
+  const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [status, setStatus] = useState('todo');
   const [dueDate, setDueDate] = useState<Date | undefined>(undefined);
 
   const createTask = useCreateTask();
+
+  // Use controlled or uncontrolled state based on props
+  const open = controlledOpen !== undefined ? controlledOpen : uncontrolledOpen;
+  const setOpen = setControlledOpen || setUncontrolledOpen;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -112,17 +123,7 @@ const CreateTaskDialog: React.FC<CreateTaskDialogProps> = ({ onSuccess, trigger 
           
           <div className="space-y-2">
             <Label>Due Date</Label>
-            <div className="flex gap-2">
-              <Input
-                type="date"
-                value={dueDate ? format(dueDate, 'yyyy-MM-dd') : ''}
-                onChange={(e) => {
-                  const date = e.target.value ? new Date(e.target.value) : undefined;
-                  setDueDate(date);
-                }}
-                className="flex-1"
-              />
-            </div>
+            <DatePicker date={dueDate} setDate={setDueDate} />
           </div>
           
           <div className="flex justify-end gap-2 pt-2">
