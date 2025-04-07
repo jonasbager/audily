@@ -25,7 +25,7 @@ const TaskStatusCard: React.FC = () => {
       { name: 'Not Started', value: 0, color: '#f43f5e' },
     ];
     
-    const completed = tasks.filter(task => task.status === 'completed').length;
+    const completed = tasks.filter(task => task.status === 'done').length;
     const inProgress = tasks.filter(task => task.status === 'in_progress').length;
     const notStarted = tasks.filter(task => task.status === 'todo').length;
     

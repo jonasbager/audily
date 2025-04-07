@@ -50,6 +50,7 @@ import { useTeamMembers } from '@/hooks/useTeamMembers';
 import { Task } from '@/services/taskService';
 import { Skeleton } from '@/components/ui/skeleton';
 import CreateTaskDialog from './CreateTaskDialog';
+import TaskEvidenceUploader from './TaskEvidenceUploader';
 
 const CategorySelect = ({ value, onChange }: { value: string; onChange: (value: string) => void }) => {
   const categories = [
@@ -81,7 +82,7 @@ const StatusSelect = ({ value, onChange }: { value: string; onChange: (value: st
   const statuses = [
     { value: 'all', label: 'All Statuses' },
     { value: 'todo', label: 'To Do' },
-    { value: 'in-progress', label: 'In Progress' },
+    { value: 'in_progress', label: 'In Progress' },
     { value: 'done', label: 'Done' },
   ];
 
@@ -110,7 +111,7 @@ const TaskStatusBadge: React.FC<{ status: string }> = ({ status }) => {
           Done
         </Badge>
       );
-    case 'in-progress':
+    case 'in_progress':
       return (
         <Badge className="bg-yellow-500 text-white">
           <Clock className="h-3 w-3 mr-1" />
@@ -132,6 +133,7 @@ const TaskItem: React.FC<{ task: Task }> = ({ task }) => {
   const { toast } = useToast();
   const { data: teamMembers } = useTeamMembers();
   const [showAssignDialog, setShowAssignDialog] = useState(false);
+  const [showEvidenceDialog, setShowEvidenceDialog] = useState(false);
   const updateTaskMutation = useUpdateTask();
   
   const handleMarkAsComplete = () => {
@@ -203,7 +205,7 @@ const TaskItem: React.FC<{ task: Task }> = ({ task }) => {
         </div>
         
         <div className="flex justify-end gap-2">
-          <Dialog>
+          <Dialog open={showEvidenceDialog} onOpenChange={setShowEvidenceDialog}>
             <DialogTrigger asChild>
               <Button variant="outline" size="sm">
                 <FileUp className="h-4 w-4 mr-2" />
@@ -214,28 +216,13 @@ const TaskItem: React.FC<{ task: Task }> = ({ task }) => {
               <DialogHeader>
                 <DialogTitle>Upload Evidence</DialogTitle>
                 <DialogDescription>
-                  Upload documentation that proves this task has been completed.
+                  Upload documentation for this task.
                 </DialogDescription>
               </DialogHeader>
-              <div className="grid w-full items-center gap-4">
-                <Label htmlFor="evidence">Evidence Files</Label>
-                <div className="border-2 border-dashed rounded-md p-8 text-center">
-                  <p className="text-sm text-muted-foreground mb-2">
-                    Drag and drop files here or click to browse
-                  </p>
-                  <Button variant="outline" size="sm">
-                    Select Files
-                  </Button>
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Supported formats: PDF, DOCX, PNG, JPG
-                </p>
-              </div>
-              <DialogFooter>
-                <Button onClick={handleMarkAsComplete}>
-                  Upload and Complete Task
-                </Button>
-              </DialogFooter>
+              <TaskEvidenceUploader 
+                taskId={task.id} 
+                onClose={() => setShowEvidenceDialog(false)} 
+              />
             </DialogContent>
           </Dialog>
 
