@@ -1,6 +1,6 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { fetchOnboardingProfile, updateOnboardingProfile } from "@/services/onboardingService";
+import { fetchOnboardingData, saveOnboardingData } from "@/services/onboardingService";
 import { useAuth } from "@/hooks/useAuth";
 import { useTasks } from "@/hooks/useTasks";
 
@@ -9,16 +9,20 @@ export function useOnboardingProfile() {
   
   return useQuery({
     queryKey: ['onboarding', user?.id],
-    queryFn: fetchOnboardingProfile,
+    queryFn: () => user ? fetchOnboardingData(user.id) : null,
     enabled: !!user,
   });
 }
 
 export function useUpdateOnboardingProfile() {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
   
   return useMutation({
-    mutationFn: updateOnboardingProfile,
+    mutationFn: (data: Omit<any, "user_id">) => {
+      if (!user) throw new Error("User must be logged in to update profile");
+      return saveOnboardingData({ ...data, user_id: user.id });
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['onboarding'] });
     },

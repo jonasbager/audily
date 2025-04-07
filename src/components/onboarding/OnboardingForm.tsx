@@ -16,7 +16,7 @@ import {
 } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Loader2, AlertCircle } from 'lucide-react';
-import { useSaveOnboardingData, useOnboardingData } from '@/hooks/useOnboarding';
+import { useOnboardingProfile, useUpdateOnboardingProfile } from '@/hooks/useOnboarding';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/hooks/use-toast';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
@@ -40,8 +40,8 @@ const OnboardingForm: React.FC = () => {
   const [step, setStep] = useState(1);
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { data: existingData, isLoading, error: loadingError } = useOnboardingData();
-  const { mutate: saveData, isPending: isSaving } = useSaveOnboardingData();
+  const { data: existingData, isLoading, error: loadingError } = useOnboardingProfile();
+  const { mutate: saveData, isPending: isSaving } = useUpdateOnboardingProfile();
   
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
