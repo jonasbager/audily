@@ -7,6 +7,8 @@ import { useTasks } from "@/hooks/useTasks";
 interface OnboardingInput {
   company_name: string;
   team_size: string;
+  industry: string; // Added industry field
+  audit_stage: string; // Added audit stage field
   compliance_framework: string;
   systems: string[];
   target_date: string;
@@ -62,5 +64,38 @@ export function useComplianceStatus() {
       return Math.min(100, Math.max(0, percentage));
     },
     enabled: !isTasksLoading,
+  });
+}
+
+// New hook for fetching recommended tasks based on onboarding data
+export function useRecommendedTasks() {
+  const { user } = useAuth();
+  const { data: onboardingData } = useOnboardingProfile();
+  const queryClient = useQueryClient();
+  
+  return useQuery({
+    queryKey: ['recommended-tasks', onboardingData?.compliance_framework, onboardingData?.industry, onboardingData?.audit_stage],
+    queryFn: async () => {
+      if (!user || !onboardingData) return [];
+      
+      try {
+        const { data, error } = await supabase.functions.invoke('openai', {
+          body: {
+            type: 'recommend_tasks',
+            framework: onboardingData.compliance_framework,
+            industry: onboardingData.industry,
+            auditStage: onboardingData.audit_stage
+          }
+        });
+        
+        if (error) throw error;
+        
+        return data.tasks || [];
+      } catch (error) {
+        console.error('Error fetching recommended tasks:', error);
+        return [];
+      }
+    },
+    enabled: !!user && !!onboardingData?.compliance_framework && !!onboardingData?.industry && !!onboardingData?.audit_stage,
   });
 }

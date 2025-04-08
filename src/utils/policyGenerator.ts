@@ -48,3 +48,51 @@ export const defaultSections = {
 export interface PolicySections {
   [key: string]: string;
 }
+
+// Generate AI-assisted "Next Steps" summary based on current progress
+export const generateNextSteps = async (completionPercentage: number, framework: string) => {
+  try {
+    const { data, error } = await supabase.functions.invoke('openai', {
+      body: {
+        type: 'next_steps',
+        completionPercentage,
+        framework
+      }
+    });
+    
+    if (error) throw new Error(error.message);
+    
+    return data.text || `Unable to generate next steps recommendation.`;
+  } catch (error: any) {
+    console.error('Error generating next steps:', error);
+    return `Based on your ${completionPercentage}% completion, we recommend focusing on the remaining items in your checklist to improve your audit readiness.`;
+  }
+};
+
+// Helper function to generate a risk assessment based on user inputs
+export const generateRiskAssessment = async (
+  companyData: {
+    industry: string;
+    size: string;
+    systems: string[];
+    vendors: string[];
+  }, 
+  framework: string
+) => {
+  try {
+    const { data, error } = await supabase.functions.invoke('openai', {
+      body: {
+        type: 'risk_assessment',
+        companyData,
+        framework
+      }
+    });
+    
+    if (error) throw new Error(error.message);
+    
+    return data.riskProfile || [];
+  } catch (error: any) {
+    console.error('Error generating risk assessment:', error);
+    return [];
+  }
+};
