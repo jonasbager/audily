@@ -27,6 +27,8 @@ import AdditionalInfoStep from './AdditionalInfoStep';
 const formSchema = z.object({
   companyName: z.string().min(2, { message: 'Company name is required' }),
   teamSize: z.string().min(1, { message: 'Team size is required' }),
+  industry: z.string().min(1, { message: 'Industry is required' }),
+  auditStage: z.string().min(1, { message: 'Audit stage is required' }),
   complianceFramework: z.string().min(1, { message: 'Compliance framework is required' }),
   systems: z.array(z.string()).min(1, { message: 'Please select at least one system' }),
   targetDate: z.string().min(1, { message: 'Target date is required' }),
@@ -48,6 +50,8 @@ const OnboardingForm: React.FC = () => {
     defaultValues: {
       companyName: '',
       teamSize: '',
+      industry: '',
+      auditStage: '',
       complianceFramework: '',
       systems: [],
       targetDate: '',
@@ -73,6 +77,8 @@ const OnboardingForm: React.FC = () => {
       form.reset({
         companyName: existingData.company_name || '',
         teamSize: existingData.team_size || '',
+        industry: existingData.industry || '',
+        auditStage: existingData.audit_stage || '',
         complianceFramework: existingData.compliance_framework || '',
         systems: existingData.systems || [],
         targetDate: existingData.target_date || '',
@@ -119,6 +125,8 @@ const OnboardingForm: React.FC = () => {
     saveData({
       company_name: data.companyName,
       team_size: data.teamSize,
+      industry: data.industry,
+      audit_stage: data.auditStage,
       compliance_framework: data.complianceFramework,
       systems: data.systems,
       target_date: data.targetDate,

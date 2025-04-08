@@ -7,6 +7,8 @@ export interface OnboardingData {
   user_id: string;
   company_name: string;
   team_size: string;
+  industry: string;
+  audit_stage: string;
   compliance_framework: string;
   systems: string[];
   target_date: string;
@@ -21,6 +23,8 @@ export interface OnboardingInput {
   user_id: string;
   company_name: string;
   team_size: string;
+  industry: string;
+  audit_stage: string;
   compliance_framework: string;
   systems: string[];
   target_date: string;

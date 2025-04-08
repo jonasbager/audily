@@ -3,12 +3,13 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { fetchOnboardingData, saveOnboardingData } from "@/services/onboardingService";
 import { useAuth } from "@/hooks/useAuth";
 import { useTasks } from "@/hooks/useTasks";
+import { supabase } from "@/integrations/supabase/client";
 
 interface OnboardingInput {
   company_name: string;
   team_size: string;
-  industry: string; // Added industry field
-  audit_stage: string; // Added audit stage field
+  industry: string;
+  audit_stage: string;
   compliance_framework: string;
   systems: string[];
   target_date: string;
@@ -74,7 +75,12 @@ export function useRecommendedTasks() {
   const queryClient = useQueryClient();
   
   return useQuery({
-    queryKey: ['recommended-tasks', onboardingData?.compliance_framework, onboardingData?.industry, onboardingData?.audit_stage],
+    queryKey: [
+      'recommended-tasks', 
+      onboardingData?.compliance_framework,
+      onboardingData?.industry,
+      onboardingData?.audit_stage
+    ],
     queryFn: async () => {
       if (!user || !onboardingData) return [];
       
@@ -96,6 +102,9 @@ export function useRecommendedTasks() {
         return [];
       }
     },
-    enabled: !!user && !!onboardingData?.compliance_framework && !!onboardingData?.industry && !!onboardingData?.audit_stage,
+    enabled: !!user && 
+      !!onboardingData?.compliance_framework && 
+      !!onboardingData?.industry && 
+      !!onboardingData?.audit_stage,
   });
 }
