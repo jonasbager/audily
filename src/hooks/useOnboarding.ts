@@ -68,11 +68,10 @@ export function useComplianceStatus() {
   });
 }
 
-// New hook for fetching recommended tasks based on onboarding data
+// Hook for fetching recommended tasks based on onboarding data
 export function useRecommendedTasks() {
   const { user } = useAuth();
   const { data: onboardingData } = useOnboardingProfile();
-  const queryClient = useQueryClient();
   
   return useQuery({
     queryKey: [
@@ -106,5 +105,6 @@ export function useRecommendedTasks() {
       !!onboardingData?.compliance_framework && 
       !!onboardingData?.industry && 
       !!onboardingData?.audit_stage,
+    staleTime: 1000 * 60 * 60, // Cache for 1 hour
   });
 }

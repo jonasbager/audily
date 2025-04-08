@@ -18,6 +18,7 @@ import EvidencePage from "./pages/EvidencePage";
 import IntegrationsPage from "./pages/IntegrationsPage";
 import SettingsPage from "./pages/SettingsPage";
 import TeamMembersPage from "./pages/TeamMembersPage";
+import RiskAssessmentPage from "./pages/RiskAssessmentPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -65,6 +66,11 @@ const App = () => (
             <Route path="/evidence" element={
               <ProtectedRoute>
                 <EvidencePage />
+              </ProtectedRoute>
+            } />
+            <Route path="/risk-assessment" element={
+              <ProtectedRoute>
+                <RiskAssessmentPage />
               </ProtectedRoute>
             } />
             <Route path="/integrations" element={
