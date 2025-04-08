@@ -6,23 +6,31 @@ import {
   ChevronRight, 
   ChevronLeft, 
   SendHorizontal,
-  X
+  Loader2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Separator } from '@/components/ui/separator';
-import { Avatar } from '@/components/ui/avatar';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Avatar } from '@/components/ui/avatar';
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from '@/hooks/use-toast';
 
 interface AISuggestion {
   id: string;
   content: string;
 }
 
+interface Message {
+  role: 'user' | 'assistant';
+  content: string;
+}
+
 const AIAssistantPanel: React.FC = () => {
   const [isExpanded, setIsExpanded] = useState(true);
   const [userInput, setUserInput] = useState('');
-  const [messages, setMessages] = useState<{role: 'user' | 'assistant', content: string}[]>([
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
+  const [messages, setMessages] = useState<Message[]>([
     {
       role: 'assistant',
       content: 'Hi there! I\'m your compliance assistant. How can I help you with NIS2 or SOX compliance today?'
@@ -44,22 +52,50 @@ const AIAssistantPanel: React.FC = () => {
     }
   ];
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!userInput.trim()) return;
     
-    // Add user message
-    setMessages(prev => [...prev, { role: 'user', content: userInput }]);
+    // Add user message to the chat
+    const userMessage = { role: 'user' as const, content: userInput };
+    setMessages(prev => [...prev, userMessage]);
+    setUserInput('');
+    setIsLoading(true);
     
-    // Simulate AI response
-    setTimeout(() => {
+    try {
+      // Format the messages for the OpenAI API
+      const messageHistory = messages.slice(-6).concat(userMessage);
+      
+      // Call our edge function
+      const { data, error } = await supabase.functions.invoke('openai', {
+        body: {
+          type: 'assistant',
+          messages: messageHistory
+        }
+      });
+      
+      if (error) throw new Error(error.message);
+      
+      // Add the assistant's response to the chat
       setMessages(prev => [...prev, { 
         role: 'assistant', 
-        content: `Thanks for your question about "${userInput}". As an AI assistant, I'd recommend starting with documenting your security measures and creating a risk assessment process. This applies to both NIS2 and SOX frameworks. Let me know if you'd like me to help generate a draft policy.` 
+        content: data.reply 
       }]);
-    }, 1000);
-    
-    setUserInput('');
+    } catch (error: any) {
+      console.error('Error with AI assistant:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to get a response from the AI assistant.',
+        variant: 'destructive'
+      });
+      
+      setMessages(prev => [...prev, { 
+        role: 'assistant', 
+        content: 'I apologize, but I encountered a technical issue. Please try again later.' 
+      }]);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleSuggestionClick = (suggestion: string) => {
@@ -122,6 +158,17 @@ const AIAssistantPanel: React.FC = () => {
               )}
             </div>
           ))}
+          {isLoading && (
+            <div className="flex justify-start gap-2">
+              <Avatar className="h-8 w-8 bg-primary">
+                <Bot size={14} className="text-primary-foreground" />
+              </Avatar>
+              <div className="bg-secondary text-secondary-foreground rounded-lg p-3 flex items-center">
+                <Loader2 size={14} className="animate-spin mr-2" />
+                Thinking...
+              </div>
+            </div>
+          )}
         </div>
       </ScrollArea>
       
@@ -150,13 +197,18 @@ const AIAssistantPanel: React.FC = () => {
               onChange={(e) => setUserInput(e.target.value)}
               placeholder="Ask a question..."
               className="resize-none min-h-[60px]"
+              disabled={isLoading}
             />
             <Button 
               type="submit" 
               size="icon" 
-              disabled={!userInput.trim()}
+              disabled={!userInput.trim() || isLoading}
             >
-              <SendHorizontal size={16} />
+              {isLoading ? (
+                <Loader2 size={16} className="animate-spin" />
+              ) : (
+                <SendHorizontal size={16} />
+              )}
             </Button>
           </div>
         </form>

@@ -1,16 +1,30 @@
 
-// Mock AI-generated text function - would be replaced with a real API call
-export const generatePolicyText = (sectionName: string, policyName: string, framework: string) => {
-  return new Promise<string>((resolve) => {
-    setTimeout(() => {
-      // This is where we would call our AI API
-      const frameworkSpecificText = framework === 'nis2'
-        ? `This is an AI-generated ${sectionName} for the ${policyName} aligned with NIS2 Directive requirements. It covers cybersecurity measures, incident reporting, and risk assessment for essential services.`
-        : `This is an AI-generated ${sectionName} for the ${policyName} aligned with ${framework.toUpperCase()} requirements. It focuses on financial reporting controls, documentation standards, and testing procedures.`;
-      
-      resolve(frameworkSpecificText);
-    }, 1500);
-  });
+import { supabase } from "@/integrations/supabase/client";
+
+// Real AI-generated text function using our edge function
+export const generatePolicyText = async (sectionName: string, policyName: string, framework: string) => {
+  try {
+    const { data, error } = await supabase.functions.invoke('openai', {
+      body: {
+        type: 'policy',
+        prompt: sectionName,
+        policyName: policyName,
+        framework: framework
+      }
+    });
+    
+    if (error) throw new Error(error.message);
+    
+    return data.text || `Failed to generate ${sectionName} for ${policyName} policy.`;
+  } catch (error: any) {
+    console.error('Error generating policy text:', error);
+    // Fallback to mock data if the API call fails
+    const frameworkSpecificText = framework === 'nis2'
+      ? `This is a placeholder ${sectionName} for the ${policyName} aligned with NIS2 Directive requirements. The OpenAI integration encountered an error: ${error.message}`
+      : `This is a placeholder ${sectionName} for the ${policyName} aligned with ${framework.toUpperCase()} requirements. The OpenAI integration encountered an error: ${error.message}`;
+    
+    return frameworkSpecificText;
+  }
 };
 
 // Generic section titles that work for both frameworks

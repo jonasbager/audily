@@ -4,6 +4,18 @@ import { fetchOnboardingData, saveOnboardingData } from "@/services/onboardingSe
 import { useAuth } from "@/hooks/useAuth";
 import { useTasks } from "@/hooks/useTasks";
 
+interface OnboardingInput {
+  company_name: string;
+  team_size: string;
+  compliance_framework: string;
+  systems: string[];
+  target_date: string;
+  contact_role: string;
+  additional_info?: string;
+  profile_complete?: boolean;
+  user_id: string;
+}
+
 export function useOnboardingProfile() {
   const { user } = useAuth();
   
@@ -19,7 +31,7 @@ export function useUpdateOnboardingProfile() {
   const { user } = useAuth();
   
   return useMutation({
-    mutationFn: (data: Omit<any, "user_id">) => {
+    mutationFn: (data: Omit<OnboardingInput, "user_id">) => {
       if (!user) throw new Error("User must be logged in to update profile");
       return saveOnboardingData({ ...data, user_id: user.id });
     },
