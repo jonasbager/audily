@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, useLocation, useNavigate } from 'react-router-dom';
 import { 
@@ -10,6 +9,7 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
 import {
   Select,
   SelectContent,
@@ -265,7 +265,7 @@ const TaskGroupAccordion: React.FC<{
                 <span className="text-sm text-muted-foreground">
                   {completedCount} of {tasks.length} complete
                 </span>
-                <Badge variant={progressPercent === 100 ? "success" : "outline"}>
+                <Badge variant={progressPercent === 100 ? "default" : "outline"} className={progressPercent === 100 ? "bg-green-500 hover:bg-green-600" : ""}>
                   {progressPercent}%
                 </Badge>
               </div>
@@ -309,12 +309,10 @@ const TaskList: React.FC = () => {
   const updateTaskMutation = useUpdateTask();
   const createTaskMutation = useCreateTask();
   
-  // Check if we need to create a task from recommendation
   useEffect(() => {
     const state = location.state as { createRecommendation?: string } | null;
     if (state?.createRecommendation) {
       const recommendationId = state.createRecommendation;
-      // Clear the state so we don't create duplicates on navigation
       navigate(location.pathname, { replace: true });
       setCreateDialogOpen(true);
     }
@@ -325,7 +323,6 @@ const TaskList: React.FC = () => {
     return matchesStatus;
   }) || [];
   
-  // Group tasks by status for checklist display
   const todoTasks = filteredTasks.filter(task => task.status === 'todo');
   const inProgressTasks = filteredTasks.filter(task => task.status === 'in_progress');
   const doneTasks = filteredTasks.filter(task => task.status === 'done');

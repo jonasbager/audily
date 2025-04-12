@@ -14,6 +14,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar } from '@/components/ui/avatar';
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from '@/hooks/use-toast';
+import { MarkdownRenderer } from '@/components/ui/markdown-renderer';
 
 interface AISuggestion {
   id: string;
@@ -52,12 +53,14 @@ const AIAssistantPanel: React.FC = () => {
     }
   ];
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!userInput.trim()) return;
+  const handleSubmit = async (e?: React.FormEvent, inputOverride?: string) => {
+    if (e) e.preventDefault();
+    
+    const input = inputOverride || userInput;
+    if (!input.trim()) return;
     
     // Add user message to the chat
-    const userMessage = { role: 'user' as const, content: userInput };
+    const userMessage = { role: 'user' as const, content: input };
     setMessages(prev => [...prev, userMessage]);
     setUserInput('');
     setIsLoading(true);
@@ -100,6 +103,8 @@ const AIAssistantPanel: React.FC = () => {
 
   const handleSuggestionClick = (suggestion: string) => {
     setUserInput(suggestion);
+    // Immediately submit the suggestion
+    handleSubmit(undefined, suggestion);
   };
 
   if (!isExpanded) {
@@ -140,7 +145,7 @@ const AIAssistantPanel: React.FC = () => {
               className={`flex gap-2 ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
             >
               {message.role === 'assistant' && (
-                <Avatar className="h-8 w-8 bg-primary">
+                <Avatar className="h-8 w-8 bg-primary flex items-center justify-center">
                   <Bot size={14} className="text-primary-foreground" />
                 </Avatar>
               )}
@@ -149,10 +154,14 @@ const AIAssistantPanel: React.FC = () => {
                   ? 'bg-primary text-primary-foreground' 
                   : 'bg-secondary text-secondary-foreground'
               }`}>
-                {message.content}
+                {message.role === 'assistant' ? (
+                  <MarkdownRenderer content={message.content} />
+                ) : (
+                  message.content
+                )}
               </div>
               {message.role === 'user' && (
-                <Avatar className="h-8 w-8 bg-muted">
+                <Avatar className="h-8 w-8 bg-muted flex items-center justify-center">
                   <MessageSquare size={14} />
                 </Avatar>
               )}
@@ -160,7 +169,7 @@ const AIAssistantPanel: React.FC = () => {
           ))}
           {isLoading && (
             <div className="flex justify-start gap-2">
-              <Avatar className="h-8 w-8 bg-primary">
+              <Avatar className="h-8 w-8 bg-primary flex items-center justify-center">
                 <Bot size={14} className="text-primary-foreground" />
               </Avatar>
               <div className="bg-secondary text-secondary-foreground rounded-lg p-3 flex items-center">
