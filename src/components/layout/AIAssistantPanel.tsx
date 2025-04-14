@@ -122,7 +122,7 @@ const AIAssistantPanel: React.FC = () => {
   }
 
   return (
-    <div className="w-80 border-l border-border bg-card flex flex-col h-screen">
+    <div className="fixed right-0 top-0 bottom-0 w-80 border-l border-border bg-card flex flex-col h-full">
       <div className="p-4 flex items-center justify-between border-b">
         <div className="flex items-center gap-2">
           <Bot size={18} />
@@ -137,7 +137,7 @@ const AIAssistantPanel: React.FC = () => {
         </Button>
       </div>
       
-      <ScrollArea className="flex-1 p-4">
+      <ScrollArea className="flex-1 overflow-y-auto p-4">
         <div className="flex flex-col gap-4">
           {messages.map((message, index) => (
             <div 
