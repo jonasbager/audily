@@ -2,6 +2,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Lightbulb, Loader2 } from 'lucide-react';
+import { MarkdownRenderer } from '@/components/ui/markdown-renderer';
 
 interface NextStepsCardProps {
   nextSteps: string | null;
@@ -10,29 +11,6 @@ interface NextStepsCardProps {
 }
 
 const NextStepsCard: React.FC<NextStepsCardProps> = ({ nextSteps, loading, complianceScore }) => {
-  // Format the next steps text - split by numbered points if possible
-  const formatNextSteps = (text: string): JSX.Element[] => {
-    // Look for numbered lists like "1. ...", "2. ...", etc.
-    if (/^\d+\.\s/.test(text.split('\n')[0])) {
-      return text.split('\n')
-        .filter(line => line.trim() !== '')
-        .map((line, index) => (
-          <div key={index} className="mb-2">
-            {line}
-          </div>
-        ));
-    }
-    
-    // If no numbered list is detected, just display as paragraphs
-    return text.split('\n\n')
-      .filter(para => para.trim() !== '')
-      .map((para, index) => (
-        <p key={index} className="mb-2">
-          {para}
-        </p>
-      ));
-  };
-
   return (
     <Card>
       <CardHeader>
@@ -52,7 +30,7 @@ const NextStepsCard: React.FC<NextStepsCardProps> = ({ nextSteps, loading, compl
           </div>
         ) : nextSteps ? (
           <div className="text-sm space-y-1 leading-relaxed">
-            {formatNextSteps(nextSteps)}
+            <MarkdownRenderer content={nextSteps} />
           </div>
         ) : (
           <div className="text-center py-8 text-muted-foreground">
@@ -66,3 +44,4 @@ const NextStepsCard: React.FC<NextStepsCardProps> = ({ nextSteps, loading, compl
 };
 
 export default NextStepsCard;
+
