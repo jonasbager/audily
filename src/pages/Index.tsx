@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
@@ -273,118 +272,32 @@ const Index = () => {
         </div>
       </div>
       
-      {/* Pricing Section (Simple version) */}
-      <div id="pricing" className="py-16 md:py-24">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Simple, transparent pricing
-            </h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Choose the plan that works best for your organization
-            </p>
+      {/* Book a Demo */}
+      <div id="book-demo" className="py-16 md:py-24 bg-primary/5 border-y border-primary/10">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            See AuditAI in Action
+          </h2>
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
+            Get a personalized walkthrough of how AuditAI can streamline your NIS2 and SOX compliance process.
+          </p>
+          <div className="flex flex-col sm:flex-row justify-center gap-4">
+            <Button asChild size="lg" className="gap-2">
+              <Link to="/book-demo">
+                Book a Free Demo
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </Button>
+            <Button asChild variant="outline" size="lg">
+              <a href="mailto:sales@auditai.com">
+                Contact Sales
+              </a>
+            </Button>
           </div>
-          
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            <div className="border border-border rounded-xl p-8 bg-card flex flex-col">
-              <h3 className="text-xl font-semibold mb-2">Startup</h3>
-              <div className="mb-4">
-                <span className="text-3xl font-bold">$199</span>
-                <span className="text-muted-foreground">/month</span>
-              </div>
-              <p className="text-muted-foreground mb-6">Perfect for small companies just starting their compliance journey.</p>
-              <ul className="space-y-3 mb-8 flex-1">
-                <li className="flex items-start">
-                  <CheckCircle2 className="h-5 w-5 text-primary mr-2 shrink-0" />
-                  <span>AI Policy Generation</span>
-                </li>
-                <li className="flex items-start">
-                  <CheckCircle2 className="h-5 w-5 text-primary mr-2 shrink-0" />
-                  <span>Task Management</span>
-                </li>
-                <li className="flex items-start">
-                  <CheckCircle2 className="h-5 w-5 text-primary mr-2 shrink-0" />
-                  <span>Basic Evidence Collection</span>
-                </li>
-                <li className="flex items-start">
-                  <CheckCircle2 className="h-5 w-5 text-primary mr-2 shrink-0" />
-                  <span>Up to 5 users</span>
-                </li>
-              </ul>
-              <Button asChild variant="outline" className="w-full">
-                <Link to="/auth">Get Started</Link>
-              </Button>
-            </div>
-            
-            <div className="border-2 border-primary rounded-xl p-8 bg-card relative flex flex-col shadow-lg">
-              <div className="absolute top-0 right-0 bg-primary text-primary-foreground px-3 py-1 text-xs font-medium rounded-bl-lg rounded-tr-lg">
-                POPULAR
-              </div>
-              <h3 className="text-xl font-semibold mb-2">Business</h3>
-              <div className="mb-4">
-                <span className="text-3xl font-bold">$499</span>
-                <span className="text-muted-foreground">/month</span>
-              </div>
-              <p className="text-muted-foreground mb-6">Ideal for growing companies with more complex compliance needs.</p>
-              <ul className="space-y-3 mb-8 flex-1">
-                <li className="flex items-start">
-                  <CheckCircle2 className="h-5 w-5 text-primary mr-2 shrink-0" />
-                  <span>Everything in Startup</span>
-                </li>
-                <li className="flex items-start">
-                  <CheckCircle2 className="h-5 w-5 text-primary mr-2 shrink-0" />
-                  <span>Advanced Evidence Collection</span>
-                </li>
-                <li className="flex items-start">
-                  <CheckCircle2 className="h-5 w-5 text-primary mr-2 shrink-0" />
-                  <span>3 System Integrations</span>
-                </li>
-                <li className="flex items-start">
-                  <CheckCircle2 className="h-5 w-5 text-primary mr-2 shrink-0" />
-                  <span>Up to 15 users</span>
-                </li>
-                <li className="flex items-start">
-                  <CheckCircle2 className="h-5 w-5 text-primary mr-2 shrink-0" />
-                  <span>Priority Support</span>
-                </li>
-              </ul>
-              <Button asChild className="w-full">
-                <Link to="/auth">Get Started</Link>
-              </Button>
-            </div>
-            
-            <div className="border border-border rounded-xl p-8 bg-card flex flex-col">
-              <h3 className="text-xl font-semibold mb-2">Enterprise</h3>
-              <div className="mb-4">
-                <span className="text-3xl font-bold">Custom</span>
-              </div>
-              <p className="text-muted-foreground mb-6">For large organizations with custom compliance requirements.</p>
-              <ul className="space-y-3 mb-8 flex-1">
-                <li className="flex items-start">
-                  <CheckCircle2 className="h-5 w-5 text-primary mr-2 shrink-0" />
-                  <span>Everything in Business</span>
-                </li>
-                <li className="flex items-start">
-                  <CheckCircle2 className="h-5 w-5 text-primary mr-2 shrink-0" />
-                  <span>Unlimited Integrations</span>
-                </li>
-                <li className="flex items-start">
-                  <CheckCircle2 className="h-5 w-5 text-primary mr-2 shrink-0" />
-                  <span>Custom Branding</span>
-                </li>
-                <li className="flex items-start">
-                  <CheckCircle2 className="h-5 w-5 text-primary mr-2 shrink-0" />
-                  <span>Dedicated Success Manager</span>
-                </li>
-                <li className="flex items-start">
-                  <CheckCircle2 className="h-5 w-5 text-primary mr-2 shrink-0" />
-                  <span>Custom Integrations</span>
-                </li>
-              </ul>
-              <Button asChild variant="outline" className="w-full">
-                <Link to="/auth">Contact Sales</Link>
-              </Button>
-            </div>
+          <div className="mt-12 text-muted-foreground space-y-2">
+            <p>✓ No credit card required</p>
+            <p>✓ 30-minute personalized consultation</p>
+            <p>✓ Tailored to your compliance needs</p>
           </div>
         </div>
       </div>
