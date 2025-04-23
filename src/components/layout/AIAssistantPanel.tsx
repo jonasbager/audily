@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { 
   MessageSquare, 
@@ -26,7 +25,11 @@ interface Message {
   content: string;
 }
 
-const AIAssistantPanel: React.FC = () => {
+interface Props {
+  onExpandChange?: (isExpanded: boolean) => void;
+}
+
+const AIAssistantPanel: React.FC<Props> = ({ onExpandChange }) => {
   const [isExpanded, setIsExpanded] = useState(true);
   const [userInput, setUserInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -102,13 +105,18 @@ const AIAssistantPanel: React.FC = () => {
     handleSubmit(undefined, suggestion);
   };
 
+  const handleExpandToggle = (expanded: boolean) => {
+    setIsExpanded(expanded);
+    onExpandChange?.(expanded);
+  };
+
   if (!isExpanded) {
     return (
       <div className="fixed right-4 bottom-4">
         <Button 
           size="icon"
           className="h-12 w-12 rounded-full shadow-md"
-          onClick={() => setIsExpanded(true)}
+          onClick={() => handleExpandToggle(true)}
         >
           <Bot size={20} />
         </Button>
@@ -117,7 +125,7 @@ const AIAssistantPanel: React.FC = () => {
   }
 
   return (
-    <div className="fixed right-0 top-0 bottom-0 w-80 border-l border-border bg-card flex flex-col h-full">
+    <div className="w-80 border-l border-border bg-card flex flex-col h-full">
       <div className="p-4 flex items-center justify-between border-b">
         <div className="flex items-center gap-2">
           <Avatar className="h-8 w-8">
@@ -132,7 +140,7 @@ const AIAssistantPanel: React.FC = () => {
         <Button 
           variant="ghost" 
           size="icon" 
-          onClick={() => setIsExpanded(false)}
+          onClick={() => handleExpandToggle(false)}
         >
           <ChevronRight size={16} />
         </Button>

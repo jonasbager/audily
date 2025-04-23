@@ -47,6 +47,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Checkbox } from '@/components/ui/checkbox';
 import CreateTaskDialog from './CreateTaskDialog';
 import TaskEvidenceUploader from './TaskEvidenceUploader';
+import EditTaskDialog from './EditTaskDialog';
 
 const CategorySelect = ({ value, onChange }: { value: string; onChange: (value: string) => void }) => {
   const categories = [
@@ -139,6 +140,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
   const { toast } = useToast();
   const { data: teamMembers } = useTeamMembers();
   const [showEvidenceDialog, setShowEvidenceDialog] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
   const updateTaskMutation = useUpdateTask();
   
   const formatDueDate = (dateString: string | null) => {
@@ -160,6 +162,20 @@ const TaskItem: React.FC<TaskItemProps> = ({
   
   const handleStatusChange = (newStatus: string) => {
     onStatusChange(task.id, newStatus);
+  };
+  
+  const handleUpdateTask = (taskId: string, updates: Partial<Task>) => {
+    updateTaskMutation.mutate({
+      id: taskId,
+      updates
+    }, {
+      onSuccess: () => {
+        toast({
+          title: "Task updated",
+          description: "Your task has been updated successfully.",
+        });
+      }
+    });
   };
   
   return (
@@ -214,6 +230,15 @@ const TaskItem: React.FC<TaskItemProps> = ({
           <FileUp className="h-3 w-3 mr-1" />
           Upload Evidence
         </Button>
+
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setShowEditDialog(true)}
+        >
+          <Edit className="h-3 w-3 mr-1" />
+          Edit Task
+        </Button>
         
         <Select
           value={task.status}
@@ -237,6 +262,15 @@ const TaskItem: React.FC<TaskItemProps> = ({
             onClose={() => setShowEvidenceDialog(false)} 
           />
         </div>
+      )}
+      
+      {showEditDialog && (
+        <EditTaskDialog
+          task={showEditDialog ? task : null}
+          open={showEditDialog}
+          onOpenChange={setShowEditDialog}
+          onSave={handleUpdateTask}
+        />
       )}
     </div>
   );
