@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
@@ -61,14 +60,11 @@ const AppSidebar = () => {
         {/* Logo */}
         <div className="flex items-center px-6 py-4">
           <Link to="/dashboard" className="flex items-center">
-            <div className="h-9 w-9 rounded-full bg-white flex items-center justify-center mr-2">
-              <img 
-                src="/lovable-uploads/95193392-ed89-4477-91a6-fed54f7f67e5.png" 
-                alt="AuditAI Logo" 
-                className="h-6 w-6 object-contain"
-              />
-            </div>
-            <span className="font-medium text-lg">AuditAI</span>
+            <img 
+              src="/lovable-uploads/95193392-ed89-4477-91a6-fed54f7f67e5.png" 
+              alt="Audily Logo" 
+              className="h-10 object-contain"
+            />
           </Link>
         </div>
         

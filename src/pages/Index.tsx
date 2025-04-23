@@ -24,14 +24,13 @@ const Index = () => {
       <nav className="border-b border-border">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center">
-            <div className="h-8 w-8 rounded-full bg-white flex items-center justify-center mr-2">
+            <Link to="/">
               <img 
                 src="/lovable-uploads/95193392-ed89-4477-91a6-fed54f7f67e5.png" 
-                alt="AuditAI Logo" 
-                className="h-6 w-6 object-contain"
+                alt="Audily Logo" 
+                className="h-8 object-contain"
               />
-            </div>
-            <span className="font-semibold text-lg">AuditAI</span>
+            </Link>
           </div>
           <div className="hidden md:flex items-center space-x-6">
             <a href="#features" className="text-foreground hover:text-primary transition-colors">Features</a>
@@ -73,7 +72,7 @@ const Index = () => {
         <div className="container mx-auto px-4 py-16 md:py-24">
           <div className="max-w-3xl mx-auto text-center">
             <div className="inline-flex items-center px-3 py-1.5 mb-6 rounded-full bg-primary/10 text-primary text-sm font-medium">
-              <span>NIS2 & SOX Compliance Made Simple</span>
+              <span>AI powered audit</span>
             </div>
             <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
               Accelerate Your <span className="gradient-text">NIS2 & SOX</span> Compliance Journey

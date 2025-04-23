@@ -1,10 +1,12 @@
+
 import React, { useState } from 'react';
 import { 
   MessageSquare, 
-  ChevronRight, 
+  ChevronRight,
   ChevronLeft, 
   SendHorizontal,
-  Loader2
+  Loader2,
+  Bot
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -32,7 +34,7 @@ const AIAssistantPanel: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'assistant',
-      content: 'Hi there! I\'m your compliance assistant. How can I help you with NIS2 or SOX compliance today?'
+      content: 'Hi there! I\'m Audrey, your compliance assistant. How can I help you with NIS2 or SOX compliance today?'
     }
   ]);
 
@@ -119,7 +121,7 @@ const AIAssistantPanel: React.FC = () => {
       <div className="p-4 flex items-center justify-between border-b">
         <div className="flex items-center gap-2">
           <Bot size={18} />
-          <h3 className="font-medium">AI Assistant</h3>
+          <h3 className="font-medium">Audrey</h3>
         </div>
         <Button 
           variant="ghost" 
