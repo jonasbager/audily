@@ -122,7 +122,7 @@ const AIAssistantPanel: React.FC = () => {
         <div className="flex items-center gap-2">
           <Avatar className="h-8 w-8">
             <AvatarImage 
-              src="/lovable-uploads/44d2a7f8-e781-47f7-b9ed-7aea794f7f5b.png" 
+              src="/lovable-uploads/9dcd8214-b671-49db-a8a8-93ee42f50ce0.png" 
               alt="Audrey Avatar" 
             />
             <AvatarFallback>AI</AvatarFallback>
@@ -148,7 +148,7 @@ const AIAssistantPanel: React.FC = () => {
               {message.role === 'assistant' && (
                 <Avatar className="h-8 w-8">
                   <AvatarImage 
-                    src="/lovable-uploads/44d2a7f8-e781-47f7-b9ed-7aea794f7f5b.png" 
+                    src="/lovable-uploads/9dcd8214-b671-49db-a8a8-93ee42f50ce0.png" 
                     alt="Audrey Avatar" 
                   />
                   <AvatarFallback>AI</AvatarFallback>
@@ -176,7 +176,7 @@ const AIAssistantPanel: React.FC = () => {
             <div className="flex justify-start gap-2">
               <Avatar className="h-8 w-8">
                 <AvatarImage 
-                  src="/lovable-uploads/44d2a7f8-e781-47f7-b9ed-7aea794f7f5b.png" 
+                  src="/lovable-uploads/9dcd8214-b671-49db-a8a8-93ee42f50ce0.png" 
                   alt="Audrey Avatar" 
                 />
                 <AvatarFallback>

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -26,7 +27,7 @@ const Index = () => {
           <div className="flex items-center">
             <Link to="/">
               <img 
-                src="/lovable-uploads/95193392-ed89-4477-91a6-fed54f7f67e5.png" 
+                src="/lovable-uploads/9dcd8214-b671-49db-a8a8-93ee42f50ce0.png" 
                 alt="Audily Logo" 
                 className="h-8 object-contain"
               />
@@ -78,7 +79,7 @@ const Index = () => {
               Accelerate Your <span className="gradient-text">NIS2 & SOX</span> Compliance Journey
             </h1>
             <p className="text-xl text-muted-foreground mb-8 md:px-10">
-              AuditAI streamlines your regulatory compliance with AI-generated policies, 
+              Audily streamlines your regulatory compliance with AI-generated policies, 
               automated evidence collection, and intelligent guidance for NIS2 and SOX requirements.
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
@@ -98,7 +99,7 @@ const Index = () => {
               <div className="rounded-xl overflow-hidden border border-border shadow-xl">
                 <img 
                   src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=1200" 
-                  alt="AuditAI Dashboard" 
+                  alt="Audily Dashboard" 
                   className="w-full h-auto"
                 />
               </div>
@@ -183,7 +184,7 @@ const Index = () => {
 
           <div className="grid md:grid-cols-3 gap-6">
             <Testimonial
-              quote="AuditAI cut our NIS2 preparation time in half. The AI-generated policies were spot on and saved us countless hours."
+              quote="Audily cut our NIS2 preparation time in half. The AI-generated policies were spot on and saved us countless hours."
               author="Sarah Johnson"
               role="CTO"
               company="TechFlow"
@@ -195,7 +196,7 @@ const Index = () => {
               company="Quantum Systems"
             />
             <Testimonial
-              quote="I was skeptical about using AI for compliance, but AuditAI exceeded all expectations. Our auditor was impressed with our documentation."
+              quote="I was skeptical about using AI for compliance, but Audily exceeded all expectations. Our auditor was impressed with our documentation."
               author="Emily Rodriguez"
               role="Compliance Manager"
               company="FutureWorks"

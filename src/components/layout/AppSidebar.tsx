@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
@@ -61,7 +62,7 @@ const AppSidebar = () => {
         <div className="flex items-center px-6 py-4">
           <Link to="/dashboard" className="flex items-center">
             <img 
-              src="/lovable-uploads/95193392-ed89-4477-91a6-fed54f7f67e5.png" 
+              src="/lovable-uploads/9dcd8214-b671-49db-a8a8-93ee42f50ce0.png" 
               alt="Audily Logo" 
               className="h-10 object-contain"
             />
