@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -314,12 +313,12 @@ const Index = () => {
               <div className="flex items-center mb-4">
                 <div className="h-8 w-8 rounded-full bg-white flex items-center justify-center mr-2">
                   <img 
-                    src="/lovable-uploads/95193392-ed89-4477-91a6-fed54f7f67e5.png" 
-                    alt="AuditAI Logo" 
+                    src="/lovable-uploads/9dcd8214-b671-49db-a8a8-93ee42f50ce0.png" 
+                    alt="Audily Logo" 
                     className="h-6 w-6 object-contain"
                   />
                 </div>
-                <span className="font-semibold text-lg">AuditAI</span>
+                <span className="font-semibold text-lg">Audily</span>
               </div>
               <p className="text-muted-foreground mb-4">
                 Simplifying NIS2 and SOX compliance with AI-powered tools and guidance.
