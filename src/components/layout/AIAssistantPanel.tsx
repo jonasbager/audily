@@ -110,7 +110,7 @@ const AIAssistantPanel: React.FC = () => {
           className="h-12 w-12 rounded-full shadow-md"
           onClick={() => setIsExpanded(true)}
         >
-          <Bot />
+          <Bot size={20} />
         </Button>
       </div>
     );
@@ -120,7 +120,13 @@ const AIAssistantPanel: React.FC = () => {
     <div className="fixed right-0 top-0 bottom-0 w-80 border-l border-border bg-card flex flex-col h-full">
       <div className="p-4 flex items-center justify-between border-b">
         <div className="flex items-center gap-2">
-          <Bot size={18} />
+          <Avatar className="h-8 w-8">
+            <AvatarImage 
+              src="/lovable-uploads/44d2a7f8-e781-47f7-b9ed-7aea794f7f5b.png" 
+              alt="Audrey Avatar" 
+            />
+            <AvatarFallback>AI</AvatarFallback>
+          </Avatar>
           <h3 className="font-medium">Audrey</h3>
         </div>
         <Button 
@@ -143,7 +149,7 @@ const AIAssistantPanel: React.FC = () => {
                 <Avatar className="h-8 w-8">
                   <AvatarImage 
                     src="/lovable-uploads/44d2a7f8-e781-47f7-b9ed-7aea794f7f5b.png" 
-                    alt="AI Assistant Avatar" 
+                    alt="Audrey Avatar" 
                   />
                   <AvatarFallback>AI</AvatarFallback>
                 </Avatar>
@@ -168,8 +174,14 @@ const AIAssistantPanel: React.FC = () => {
           ))}
           {isLoading && (
             <div className="flex justify-start gap-2">
-              <Avatar className="h-8 w-8 bg-primary flex items-center justify-center">
-                <Bot size={14} className="text-primary-foreground" />
+              <Avatar className="h-8 w-8">
+                <AvatarImage 
+                  src="/lovable-uploads/44d2a7f8-e781-47f7-b9ed-7aea794f7f5b.png" 
+                  alt="Audrey Avatar" 
+                />
+                <AvatarFallback>
+                  <Loader2 size={14} className="animate-spin" />
+                </AvatarFallback>
               </Avatar>
               <div className="bg-secondary text-secondary-foreground rounded-lg p-3 flex items-center">
                 <Loader2 size={14} className="animate-spin mr-2" />
