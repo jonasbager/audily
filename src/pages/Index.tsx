@@ -26,7 +26,7 @@ const Index = () => {
           <div className="flex items-center">
             <Link to="/">
               <img 
-                src="/lovable-uploads/9dcd8214-b671-49db-a8a8-93ee42f50ce0.png" 
+                src="/audily_logo.svg" 
                 alt="Audily Logo" 
                 className="h-8 object-contain"
               />
@@ -311,14 +311,13 @@ const Index = () => {
           <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
             <div className="col-span-2">
               <div className="flex items-center mb-4">
-                <div className="h-8 w-8 rounded-full bg-white flex items-center justify-center mr-2">
+                <div className="h-8 w-8">
                   <img 
-                    src="/lovable-uploads/9dcd8214-b671-49db-a8a8-93ee42f50ce0.png" 
+                    src="/audily_logo.svg" 
                     alt="Audily Logo" 
-                    className="h-6 w-6 object-contain"
+                    className="h-8 w-auto object-contain"
                   />
                 </div>
-                <span className="font-semibold text-lg">Audily</span>
               </div>
               <p className="text-muted-foreground mb-4">
                 Simplifying NIS2 and SOX compliance with AI-powered tools and guidance.
@@ -359,7 +358,7 @@ const Index = () => {
           
           <div className="mt-12 pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center">
             <div className="text-sm text-muted-foreground mb-4 md:mb-0">
-              © 2025 AuditAI. All rights reserved.
+              © 2025 Audily. All rights reserved.
             </div>
             <div className="flex space-x-6">
               <a href="#" aria-label="Twitter" className="text-muted-foreground hover:text-foreground">
