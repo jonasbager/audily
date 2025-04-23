@@ -15,9 +15,8 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
     <SidebarProvider>
       <div className="flex min-h-screen w-full">
         <AppSidebar />
-        <main className="flex-1 overflow-y-auto transition-all duration-300 md:ml-64">
-          {/* Container with dynamic width adjustment based on panel state */}
-          <div className="p-6" style={{ marginRight: isAIPanelOpen ? '320px' : '0' }}>
+        <main className="flex-1 overflow-y-auto transition-all duration-300 md:ml-64"> 
+          <div className={`container mx-auto p-6 ${isAIPanelOpen ? 'pr-80' : ''}`}>
             {children}
           </div>
         </main>
