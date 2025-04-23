@@ -6,7 +6,9 @@ import DashboardOverview from '@/components/dashboard/DashboardOverview';
 const DashboardPage: React.FC = () => {
   return (
     <AppLayout>
-      <DashboardOverview />
+      <div className="w-full max-w-full">
+        <DashboardOverview />
+      </div>
     </AppLayout>
   );
 };
