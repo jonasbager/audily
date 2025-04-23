@@ -64,7 +64,7 @@ const AppSidebar = () => {
             <img 
               src="/audily_logo.svg" 
               alt="Audily Logo" 
-              className="h-12 w-auto object-contain" // Increased height from h-10 to h-12
+              className="h-14 w-auto object-contain" // Increased height from h-10 to h-12
             />
           </Link>
         </div>
