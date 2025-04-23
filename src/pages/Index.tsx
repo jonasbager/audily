@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -28,7 +29,7 @@ const Index = () => {
               <img 
                 src="/audily_logo.svg" 
                 alt="Audily Logo" 
-                className="h-8 object-contain"
+                className="h-14 object-contain"
               />
             </Link>
           </div>
@@ -311,11 +312,11 @@ const Index = () => {
           <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
             <div className="col-span-2">
               <div className="flex items-center mb-4">
-                <div className="h-8 w-8">
+                <div className="h-16 w-16">
                   <img 
                     src="/audily_logo.svg" 
                     alt="Audily Logo" 
-                    className="h-8 w-auto object-contain"
+                    className="h-16 w-auto object-contain"
                   />
                 </div>
               </div>
