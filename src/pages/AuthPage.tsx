@@ -1,7 +1,6 @@
 
 import React from 'react';
 import AuthForm from '@/components/auth/AuthForm';
-import { Shield } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const AuthPage: React.FC = () => {
@@ -12,21 +11,16 @@ const AuthPage: React.FC = () => {
         <div>
           <Link to="/" className="flex items-center">
             <div className="h-10 w-10 rounded-full bg-white flex items-center justify-center mr-2">
-              <Shield className="h-5 w-5 text-primary" />
+              <img 
+                src="/lovable-uploads/95193392-ed89-4477-91a6-fed54f7f67e5.png" 
+                alt="AuditAI Logo" 
+                className="h-7 w-7 object-contain"
+              />
             </div>
             <span className="font-semibold text-xl text-white">AuditAI</span>
           </Link>
           
-          <div className="mt-24">
-            <h2 className="text-3xl font-bold text-white mb-6">Simplify your SOC 2 audit journey</h2>
-            <p className="text-primary-foreground/80 text-lg">
-              Join hundreds of companies using AuditAI to streamline compliance and reduce audit preparation time by 60%.
-            </p>
-          </div>
-        </div>
-        
-        <div className="text-primary-foreground/60 text-sm">
-          © 2025 AuditAI. All rights reserved.
+          {/* ... rest of left side */}
         </div>
       </div>
       
@@ -36,7 +30,11 @@ const AuthPage: React.FC = () => {
           <div className="mb-8 lg:hidden">
             <Link to="/" className="flex items-center justify-center">
               <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center mr-2">
-                <Shield className="h-5 w-5 text-primary-foreground" />
+                <img 
+                  src="/lovable-uploads/95193392-ed89-4477-91a6-fed54f7f67e5.png" 
+                  alt="AuditAI Logo" 
+                  className="h-7 w-7 object-contain"
+                />
               </div>
               <span className="font-semibold text-xl">AuditAI</span>
             </Link>

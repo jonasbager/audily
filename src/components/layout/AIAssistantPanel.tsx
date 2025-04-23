@@ -1,7 +1,5 @@
-
 import React, { useState } from 'react';
 import { 
-  Bot, 
   MessageSquare, 
   ChevronRight, 
   ChevronLeft, 
@@ -11,7 +9,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Avatar } from '@/components/ui/avatar';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from '@/hooks/use-toast';
 import { MarkdownRenderer } from '@/components/ui/markdown-renderer';
@@ -59,17 +57,14 @@ const AIAssistantPanel: React.FC = () => {
     const input = inputOverride || userInput;
     if (!input.trim()) return;
     
-    // Add user message to the chat
     const userMessage = { role: 'user' as const, content: input };
     setMessages(prev => [...prev, userMessage]);
     setUserInput('');
     setIsLoading(true);
     
     try {
-      // Format the messages for the OpenAI API
       const messageHistory = messages.slice(-6).concat(userMessage);
       
-      // Call our edge function
       const { data, error } = await supabase.functions.invoke('openai', {
         body: {
           type: 'assistant',
@@ -79,7 +74,6 @@ const AIAssistantPanel: React.FC = () => {
       
       if (error) throw new Error(error.message);
       
-      // Add the assistant's response to the chat
       setMessages(prev => [...prev, { 
         role: 'assistant', 
         content: data.reply 
@@ -103,7 +97,6 @@ const AIAssistantPanel: React.FC = () => {
 
   const handleSuggestionClick = (suggestion: string) => {
     setUserInput(suggestion);
-    // Immediately submit the suggestion
     handleSubmit(undefined, suggestion);
   };
 
@@ -145,8 +138,12 @@ const AIAssistantPanel: React.FC = () => {
               className={`flex gap-2 ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
             >
               {message.role === 'assistant' && (
-                <Avatar className="h-8 w-8 bg-primary flex items-center justify-center">
-                  <Bot size={14} className="text-primary-foreground" />
+                <Avatar className="h-8 w-8">
+                  <AvatarImage 
+                    src="/lovable-uploads/44d2a7f8-e781-47f7-b9ed-7aea794f7f5b.png" 
+                    alt="AI Assistant Avatar" 
+                  />
+                  <AvatarFallback>AI</AvatarFallback>
                 </Avatar>
               )}
               <div className={`rounded-lg p-3 max-w-[80%] ${

@@ -1,6 +1,6 @@
 import React from 'react';
-import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
 import { 
   Shield, 
   CheckCircle2, 
@@ -24,8 +24,12 @@ const Index = () => {
       <nav className="border-b border-border">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center">
-            <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center mr-2">
-              <Shield className="h-4 w-4 text-primary-foreground" />
+            <div className="h-8 w-8 rounded-full bg-white flex items-center justify-center mr-2">
+              <img 
+                src="/lovable-uploads/95193392-ed89-4477-91a6-fed54f7f67e5.png" 
+                alt="AuditAI Logo" 
+                className="h-6 w-6 object-contain"
+              />
             </div>
             <span className="font-semibold text-lg">AuditAI</span>
           </div>
@@ -308,8 +312,12 @@ const Index = () => {
           <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
             <div className="col-span-2">
               <div className="flex items-center mb-4">
-                <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center mr-2">
-                  <Shield className="h-4 w-4 text-primary-foreground" />
+                <div className="h-8 w-8 rounded-full bg-white flex items-center justify-center mr-2">
+                  <img 
+                    src="/lovable-uploads/95193392-ed89-4477-91a6-fed54f7f67e5.png" 
+                    alt="AuditAI Logo" 
+                    className="h-6 w-6 object-contain"
+                  />
                 </div>
                 <span className="font-semibold text-lg">AuditAI</span>
               </div>
