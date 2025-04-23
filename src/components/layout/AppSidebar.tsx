@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
@@ -37,12 +36,6 @@ const SidebarLink = ({ to, icon, label, isActive, onClick }: SidebarLinkProps) =
         <span className="mr-3">{icon}</span>
         <span>{label}</span>
       </div>
-      {isActive && (
-        <span 
-          className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-sidebar-primary rounded-r-full 
-          rotate-180" 
-        />
-      )}
     </Link>
   );
 };
