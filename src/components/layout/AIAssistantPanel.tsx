@@ -122,7 +122,7 @@ const AIAssistantPanel: React.FC = () => {
         <div className="flex items-center gap-2">
           <Avatar className="h-8 w-8">
             <AvatarImage 
-              src="/lovable-uploads/9dcd8214-b671-49db-a8a8-93ee42f50ce0.png" 
+              src="/audily_avatar.svg" 
               alt="Audrey Avatar" 
             />
             <AvatarFallback>AI</AvatarFallback>

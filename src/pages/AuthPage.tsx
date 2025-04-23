@@ -11,7 +11,7 @@ const AuthPage: React.FC = () => {
         <div>
           <Link to="/" className="flex items-center">
             <img 
-              src="/lovable-uploads/9dcd8214-b671-49db-a8a8-93ee42f50ce0.png" 
+              src="/audily_logo.svg" 
               alt="Audily Logo" 
               className="h-10 object-contain"
             />
@@ -35,7 +35,7 @@ const AuthPage: React.FC = () => {
           <div className="mb-8 lg:hidden">
             <Link to="/" className="flex items-center justify-center">
               <img 
-                src="/lovable-uploads/9dcd8214-b671-49db-a8a8-93ee42f50ce0.png" 
+                src="/audily_logo.svg" 
                 alt="Audily Logo" 
                 className="h-10 object-contain"
               />
