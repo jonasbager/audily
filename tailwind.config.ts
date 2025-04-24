@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -126,9 +127,6 @@ export default {
 			},
 			fontFamily: {
 				sans: ['Inter', 'sans-serif']
-			},
-			width: {
-				'sidebar': 'calc(16rem - 30px)'
 			}
 		}
 	},

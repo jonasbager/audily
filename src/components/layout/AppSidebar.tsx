@@ -52,18 +52,20 @@ const AppSidebar = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen w-sidebar bg-sidebar border-r border-sidebar-border fixed left-0 top-0 z-10">
+    <div className="flex flex-col h-screen w-64 bg-sidebar border-r border-sidebar-border fixed left-0 top-0 z-10">
       <div className="flex flex-col h-full">
+        {/* Logo */}
         <div className="flex items-center px-6 py-4">
           <Link to="/dashboard" className="flex items-center">
             <img 
               src="/audily_logo.svg" 
               alt="Audily Logo" 
-              className="h-14 w-auto object-contain"
+              className="h-14 w-auto object-contain" // Increased height from h-10 to h-12
             />
           </Link>
         </div>
         
+        {/* Main Navigation */}
         <nav className="flex-1 flex flex-col px-4 py-6">
           <SidebarLink 
             to="/dashboard" 
@@ -97,6 +99,7 @@ const AppSidebar = () => {
           />
         </nav>
         
+        {/* Bottom Navigation */}
         <div className="px-4 py-6 border-t border-sidebar-border">
           <SidebarLink 
             to="/settings" 

@@ -16,7 +16,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
     <SidebarProvider>
       <div className="flex min-h-screen w-full">
         <AppSidebar />
-        <main className={`flex-1 overflow-y-auto transition-all duration-300 ml-sidebar ${isChatVisible ? 'mr-80' : ''}`}> 
+        <main className={`flex-1 overflow-y-auto transition-all duration-300 md:ml-64 ${isChatVisible ? 'mr-80' : ''}`}> 
           <div className="container mx-auto p-6">
             {children}
           </div>
