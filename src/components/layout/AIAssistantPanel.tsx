@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { 
   MessageSquare, 
@@ -20,21 +21,15 @@ interface AISuggestion {
   content: string;
 }
 
-interface Message {
-  role: 'user' | 'assistant';
-  content: string;
-}
-
 interface Props {
   onExpandChange?: (isExpanded: boolean) => void;
 }
 
 const AIAssistantPanel: React.FC<Props> = ({ onExpandChange }) => {
-  const [isExpanded, setIsExpanded] = useState(true);
   const [userInput, setUserInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-  const { messages, setMessages } = useChat();
+  const { messages, setMessages, isChatVisible, setIsChatVisible } = useChat();
 
   const suggestions: AISuggestion[] = [
     {
@@ -101,11 +96,11 @@ const AIAssistantPanel: React.FC<Props> = ({ onExpandChange }) => {
   };
 
   const handleExpandToggle = (expanded: boolean) => {
-    setIsExpanded(expanded);
+    setIsChatVisible(expanded);
     onExpandChange?.(expanded);
   };
 
-  if (!isExpanded) {
+  if (!isChatVisible) {
     return (
       <div className="fixed right-4 bottom-4">
         <Button 
@@ -120,7 +115,7 @@ const AIAssistantPanel: React.FC<Props> = ({ onExpandChange }) => {
   }
 
   return (
-    <div className="w-80 border-l border-border bg-card flex flex-col h-screen fixed right-0 top-0">
+    <div className="w-80 border-l border-border bg-card flex flex-col h-full fixed right-0 top-0 bottom-0">
       <div className="p-4 flex items-center justify-between border-b">
         <div className="flex items-center gap-2">
           <Avatar className="h-8 w-8">

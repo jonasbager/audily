@@ -9,6 +9,8 @@ interface Message {
 interface ChatContextType {
   messages: Message[];
   setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
+  isChatVisible: boolean;
+  setIsChatVisible: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const ChatContext = createContext<ChatContextType | undefined>(undefined);
@@ -20,9 +22,10 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
       content: 'Hi there! I\'m Audrey, your compliance assistant. How can I help you with NIS2 or SOX compliance today?'
     }
   ]);
+  const [isChatVisible, setIsChatVisible] = useState<boolean>(true);
 
   return (
-    <ChatContext.Provider value={{ messages, setMessages }}>
+    <ChatContext.Provider value={{ messages, setMessages, isChatVisible, setIsChatVisible }}>
       {children}
     </ChatContext.Provider>
   );
