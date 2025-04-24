@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { 
   MessageSquare, 
   ChevronRight,
-  ChevronLeft, 
   SendHorizontal,
   Loader2,
   Bot
@@ -14,6 +13,7 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from '@/hooks/use-toast';
 import { MarkdownRenderer } from '@/components/ui/markdown-renderer';
+import { useChat } from '@/contexts/ChatContext';
 
 interface AISuggestion {
   id: string;
@@ -34,12 +34,7 @@ const AIAssistantPanel: React.FC<Props> = ({ onExpandChange }) => {
   const [userInput, setUserInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      role: 'assistant',
-      content: 'Hi there! I\'m Audrey, your compliance assistant. How can I help you with NIS2 or SOX compliance today?'
-    }
-  ]);
+  const { messages, setMessages } = useChat();
 
   const suggestions: AISuggestion[] = [
     {
@@ -125,7 +120,7 @@ const AIAssistantPanel: React.FC<Props> = ({ onExpandChange }) => {
   }
 
   return (
-    <div className="w-80 border-l border-border bg-card flex flex-col h-full">
+    <div className="w-80 border-l border-border bg-card flex flex-col h-screen fixed right-0 top-0">
       <div className="p-4 flex items-center justify-between border-b">
         <div className="flex items-center gap-2">
           <Avatar className="h-8 w-8">
@@ -146,7 +141,7 @@ const AIAssistantPanel: React.FC<Props> = ({ onExpandChange }) => {
         </Button>
       </div>
       
-      <ScrollArea className="flex-1 overflow-y-auto p-4">
+      <ScrollArea className="flex-1 p-4">
         <div className="flex flex-col gap-4">
           {messages.map((message, index) => (
             <div 
@@ -156,7 +151,7 @@ const AIAssistantPanel: React.FC<Props> = ({ onExpandChange }) => {
               {message.role === 'assistant' && (
                 <Avatar className="h-8 w-8">
                   <AvatarImage 
-                    src="/lovable-uploads/9dcd8214-b671-49db-a8a8-93ee42f50ce0.png" 
+                    src="/audily_avatar.svg" 
                     alt="Audrey Avatar" 
                   />
                   <AvatarFallback>AI</AvatarFallback>
@@ -184,7 +179,7 @@ const AIAssistantPanel: React.FC<Props> = ({ onExpandChange }) => {
             <div className="flex justify-start gap-2">
               <Avatar className="h-8 w-8">
                 <AvatarImage 
-                  src="/lovable-uploads/9dcd8214-b671-49db-a8a8-93ee42f50ce0.png" 
+                  src="/audily_avatar.svg" 
                   alt="Audrey Avatar" 
                 />
                 <AvatarFallback>
