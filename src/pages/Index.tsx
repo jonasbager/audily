@@ -98,7 +98,7 @@ const Index = () => {
               <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent z-10 pointer-events-none h-12 bottom-0 top-auto"></div>
               <div className="rounded-xl overflow-hidden border border-border shadow-xl">
                 <img 
-                  src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=1200" 
+                  src="/lovable-uploads/bcaf4a37-0e07-464e-be38-a9e36ee0c68d.png" 
                   alt="Audily Dashboard" 
                   className="w-full h-auto"
                 />
