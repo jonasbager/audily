@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
@@ -52,7 +53,7 @@ const AppSidebar = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen w-64 bg-sidebar border-r border-sidebar-border fixed left-0 top-0 z-10">
+    <div className="flex flex-col h-screen w-56 bg-sidebar border-r border-sidebar-border fixed left-0 top-0 z-10">
       <div className="flex flex-col h-full">
         {/* Logo */}
         <div className="flex items-center px-6 py-4">
@@ -60,7 +61,7 @@ const AppSidebar = () => {
             <img 
               src="/audily_logo.svg" 
               alt="Audily Logo" 
-              className="h-14 w-auto object-contain" // Increased height from h-10 to h-12
+              className="h-14 w-auto object-contain" 
             />
           </Link>
         </div>
