@@ -91,7 +91,7 @@ const AuthForm: React.FC = () => {
       
       toast({
         title: 'Logged in successfully',
-        description: 'Welcome back to AuditAI',
+        description: 'Welcome back to Audily',
       });
       
       navigate('/dashboard');
@@ -149,7 +149,7 @@ const AuthForm: React.FC = () => {
             <Shield className="h-6 w-6 text-primary-foreground" />
           </div>
         </div>
-        <CardTitle className="text-2xl">AuditAI</CardTitle>
+        <CardTitle className="text-2xl">Audily</CardTitle>
         <CardDescription>
           Your AI-powered SOC 2 compliance platform
         </CardDescription>

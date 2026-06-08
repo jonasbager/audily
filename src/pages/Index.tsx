@@ -112,12 +112,7 @@ const Index = () => {
       <div className="border-y border-border bg-muted/50">
         <div className="container mx-auto px-4 py-8">
           <div className="flex flex-wrap justify-center items-center gap-x-12 gap-y-6 text-muted-foreground">
-            <p className="text-sm font-medium">Trusted by innovative companies:</p>
-            <span className="text-lg font-semibold opacity-70">Acme Inc</span>
-            <span className="text-lg font-semibold opacity-70">TechFlow</span>
-            <span className="text-lg font-semibold opacity-70">Quantum Systems</span>
-            <span className="text-lg font-semibold opacity-70">FutureWorks</span>
-            <span className="text-lg font-semibold opacity-70">DevSecOps</span>
+            <p className="text-sm font-medium">Tested in private beta with Danish enterprises</p>
           </div>
         </div>
       </div>
@@ -210,7 +205,7 @@ const Index = () => {
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              How AuditAI Works
+              How Audily Works
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               A simple, four-step process to NIS2 and SOX compliance
@@ -260,7 +255,7 @@ const Index = () => {
             Ready to simplify your compliance journey?
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
-            Join companies using AuditAI to streamline NIS2 and SOX compliance and reduce audit preparation time by 60%.
+            Join companies using Audily to streamline NIS2 and SOX compliance and reduce audit preparation time by 60%.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <Button asChild size="lg" className="gap-2">
@@ -280,10 +275,10 @@ const Index = () => {
       <div id="book-demo" className="py-16 md:py-24 bg-primary/5 border-y border-primary/10">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            See AuditAI in Action
+            See Audily in Action
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
-            Get a personalized walkthrough of how AuditAI can streamline your NIS2 and SOX compliance process.
+            Get a personalized walkthrough of how Audily can streamline your NIS2 and SOX compliance process.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <Button asChild size="lg" className="gap-2">
@@ -293,7 +288,7 @@ const Index = () => {
               </Link>
             </Button>
             <Button asChild variant="outline" size="lg">
-              <a href="mailto:sales@auditai.com">
+              <a href="mailto:jonas@bager.dk">
                 Contact Sales
               </a>
             </Button>
@@ -359,7 +354,7 @@ const Index = () => {
           
           <div className="mt-12 pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center">
             <div className="text-sm text-muted-foreground mb-4 md:mb-0">
-              © 2025 Audily. All rights reserved.
+              © 2026 Audily. All rights reserved.
             </div>
             <div className="flex space-x-6">
               <a href="#" aria-label="Twitter" className="text-muted-foreground hover:text-foreground">
