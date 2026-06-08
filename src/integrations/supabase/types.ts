@@ -127,11 +127,13 @@ export type Database = {
       onboarding: {
         Row: {
           additional_info: string | null
+          audit_stage: string | null
           company_name: string
           compliance_framework: string
           contact_role: string
           created_at: string
           id: string
+          industry: string | null
           profile_complete: boolean
           systems: string[]
           target_date: string
@@ -141,11 +143,13 @@ export type Database = {
         }
         Insert: {
           additional_info?: string | null
+          audit_stage?: string | null
           company_name: string
           compliance_framework: string
           contact_role: string
           created_at?: string
           id?: string
+          industry?: string | null
           profile_complete?: boolean
           systems?: string[]
           target_date: string
@@ -155,11 +159,13 @@ export type Database = {
         }
         Update: {
           additional_info?: string | null
+          audit_stage?: string | null
           company_name?: string
           compliance_framework?: string
           contact_role?: string
           created_at?: string
           id?: string
+          industry?: string | null
           profile_complete?: boolean
           systems?: string[]
           target_date?: string
