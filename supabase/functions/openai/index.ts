@@ -10,6 +10,7 @@ const corsHeaders = {
 };
 
 async function callAI(messages: any[], temperature = 0.7) {
+  console.log("callAI: key present?", !!LOVABLE_API_KEY, "model:", MODEL);
   const res = await fetch(GATEWAY_URL, {
     method: "POST",
     headers: {
@@ -19,15 +20,16 @@ async function callAI(messages: any[], temperature = 0.7) {
     body: JSON.stringify({ model: MODEL, messages, temperature }),
   });
 
+  const raw = await res.text();
+  console.log("AI gateway response", res.status, raw.slice(0, 500));
+
   if (!res.ok) {
-    const text = await res.text();
-    console.error("AI gateway error", res.status, text);
     if (res.status === 429) throw new Error("Rate limit exceeded. Please try again shortly.");
     if (res.status === 402) throw new Error("AI credits exhausted. Please add credits to your workspace.");
-    throw new Error(`AI gateway error: ${res.status}`);
+    throw new Error(`AI gateway error ${res.status}: ${raw}`);
   }
 
-  const data = await res.json();
+  const data = JSON.parse(raw);
   return data.choices?.[0]?.message?.content ?? "";
 }
 
@@ -47,7 +49,7 @@ serve(async (req) => {
           { role: "system", content: `You are an expert in compliance policies. Generate professional and regulation-compliant ${framework.toUpperCase()} policy content.` },
           { role: "user", content: `Generate a ${prompt} section for a policy titled "${policyName}" that adheres to ${framework.toUpperCase()} compliance framework requirements.` },
         ]);
-        return new Response(JSON.stringify({ text: text || "Failed to generate policy content." }), {
+        return new Response(JSON.stringify({ text: text || "Failed to generate policy content. [v2]" }), {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
