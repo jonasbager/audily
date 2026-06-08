@@ -66,11 +66,12 @@ const DashboardOverview: React.FC = () => {
   const completedTasks = tasks?.filter(task => task.status === 'done').length || 0;
   const inProgressTasks = tasks?.filter(task => task.status === 'in_progress').length || 0;
   const pendingTasks = tasks?.filter(task => task.status === 'todo').length || 0;
+  const pct = (n: number) => (totalTasks > 0 ? Math.round((n / totalTasks) * 100) : 0);
 
   // Calculate policy stats
   const totalPolicies = policies?.length || 0;
   const draftPolicies = policies?.filter(policy => policy.status === 'draft').length || 0;
-  const publishedPolicies = policies?.filter(policy => policy.status === 'published').length || 0;
+  const publishedPolicies = policies?.filter(policy => policy.status === 'complete').length || 0;
 
   const isLoading = scoreLoading || onboardingLoading || tasksLoading || recommendedLoading;
 
