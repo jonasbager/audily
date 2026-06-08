@@ -109,27 +109,27 @@ const DashboardOverview: React.FC = () => {
                     <CheckCircle2 className="inline h-4 w-4 text-green-500 mr-1" />
                     {completedTasks} Completed
                   </span>
-                  <span>{Math.round((completedTasks / totalTasks) * 100) || 0}%</span>
+                  <span>{pct(completedTasks)}%</span>
                 </div>
-                <Progress value={(completedTasks / totalTasks) * 100 || 0} className="h-1" />
+                <Progress value={pct(completedTasks)} className="h-1" />
                 
                 <div className="flex justify-between text-sm">
                   <span>
                     <Clock className="inline h-4 w-4 text-yellow-500 mr-1" />
                     {inProgressTasks} In Progress
                   </span>
-                  <span>{Math.round((inProgressTasks / totalTasks) * 100) || 0}%</span>
+                  <span>{pct(inProgressTasks)}%</span>
                 </div>
-                <Progress value={(inProgressTasks / totalTasks) * 100 || 0} className="h-1" />
+                <Progress value={pct(inProgressTasks)} className="h-1" />
                 
                 <div className="flex justify-between text-sm">
                   <span>
                     <AlertCircle className="inline h-4 w-4 text-gray-500 mr-1" />
                     {pendingTasks} Pending
                   </span>
-                  <span>{Math.round((pendingTasks / totalTasks) * 100) || 0}%</span>
+                  <span>{pct(pendingTasks)}%</span>
                 </div>
-                <Progress value={(pendingTasks / totalTasks) * 100 || 0} className="h-1" />
+                <Progress value={pct(pendingTasks)} className="h-1" />
               </div>
             </div>
           </CardContent>
