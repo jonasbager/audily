@@ -31,30 +31,32 @@ export async function fetchTasks(): Promise<Task[]> {
   try {
     const { data, error } = await supabase
       .from('tasks')
-      .select(`
-        *,
-        team_members (id, email, name, role)
-      `)
+      .select('*')
       .order('updated_at', { ascending: false });
-    
+
     if (error) throw error;
-    
-    // Transform the result to include assignee information directly in the task
-    const transformedData = data.map(task => {
-      let assigneeInfo = null;
-      if (task.team_members) {
-        assigneeInfo = task.team_members;
-      }
-      
+
+    const assigneeIds = Array.from(
+      new Set((data || []).map((t: any) => t.assigned_to).filter(Boolean))
+    );
+
+    let membersById: Record<string, { email?: string; name?: string }> = {};
+    if (assigneeIds.length > 0) {
+      const { data: members } = await supabase
+        .from('team_members')
+        .select('id, email, name')
+        .in('id', assigneeIds as string[]);
+      membersById = Object.fromEntries((members || []).map((m: any) => [m.id, m]));
+    }
+
+    return (data || []).map((task: any) => {
+      const m = task.assigned_to ? membersById[task.assigned_to] : null;
       return {
         ...task,
-        assignee_email: assigneeInfo?.email,
-        assignee_name: assigneeInfo?.name,
-        team_members: undefined // Remove nested object from the result
+        assignee_email: m?.email ?? null,
+        assignee_name: m?.name ?? null,
       };
     });
-    
-    return transformedData || [];
   } catch (error: any) {
     console.error('Error fetching tasks:', error);
     toast({
