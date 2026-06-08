@@ -149,16 +149,22 @@ const DashboardOverview: React.FC = () => {
                 </Button>
               </div>
               
-              <div className="grid grid-cols-2 gap-2">
-                <div className="p-3 bg-muted rounded-md text-center">
-                  <div className="text-2xl font-bold">{publishedPolicies}</div>
-                  <div className="text-xs text-muted-foreground">Published</div>
+              {totalPolicies > 0 ? (
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="p-3 bg-muted rounded-md text-center">
+                    <div className="text-2xl font-bold">{publishedPolicies}</div>
+                    <div className="text-xs text-muted-foreground">Complete</div>
+                  </div>
+                  <div className="p-3 bg-muted rounded-md text-center">
+                    <div className="text-2xl font-bold">{draftPolicies}</div>
+                    <div className="text-xs text-muted-foreground">Drafts</div>
+                  </div>
                 </div>
-                <div className="p-3 bg-muted rounded-md text-center">
-                  <div className="text-2xl font-bold">{draftPolicies}</div>
-                  <div className="text-xs text-muted-foreground">Drafts</div>
+              ) : (
+                <div className="p-3 bg-muted rounded-md text-center text-sm text-muted-foreground">
+                  No policies yet — generate your first with AI.
                 </div>
-              </div>
+              )}
               
               <Button 
                 variant="outline" 
