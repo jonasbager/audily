@@ -100,7 +100,7 @@ const PolicyList: React.FC = () => {
                     <FileText className="h-5 w-5 text-primary" />
                     {policy.title}
                   </CardTitle>
-                  <CardDescription>{policy.description}</CardDescription>
+                  <CardDescription className="line-clamp-2">{policy.description}</CardDescription>
                 </div>
                 <PolicyStatusBadge status={policy.status} />
               </CardHeader>
