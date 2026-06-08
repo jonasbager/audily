@@ -15,6 +15,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from '@/hooks/use-toast';
 import { MarkdownRenderer } from '@/components/ui/markdown-renderer';
 import { useChat } from '@/contexts/ChatContext';
+import { useOnboardingProfile } from '@/hooks/useOnboarding';
 
 interface AISuggestion {
   id: string;
@@ -25,26 +26,33 @@ interface Props {
   onExpandChange?: (isExpanded: boolean) => void;
 }
 
+const SUGGESTIONS_BY_FRAMEWORK: Record<string, AISuggestion[]> = {
+  nis2: [
+    { id: 'n1', content: 'What policies do I need for NIS2 compliance?' },
+    { id: 'n2', content: 'Explain what evidence I need for NIS2 Article 21' },
+    { id: 'n3', content: 'How do I document supply chain security under NIS2?' },
+  ],
+  sox: [
+    { id: 's1', content: 'How do I create a SOX internal control framework?' },
+    { id: 's2', content: 'What evidence is needed for SOX Section 404?' },
+    { id: 's3', content: 'Walk me through SOX IT general controls (ITGC).' },
+  ],
+  default: [
+    { id: 'd1', content: 'What policies do I need to get audit-ready?' },
+    { id: 'd2', content: 'Where should I start with my compliance program?' },
+    { id: 'd3', content: 'Help me prioritize my checklist.' },
+  ],
+};
+
 const AIAssistantPanel: React.FC<Props> = ({ onExpandChange }) => {
   const [userInput, setUserInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const { messages, setMessages, isChatVisible, setIsChatVisible } = useChat();
+  const { data: onboardingData } = useOnboardingProfile();
 
-  const suggestions: AISuggestion[] = [
-    {
-      id: '1',
-      content: 'What policies do I need for NIS2 compliance?'
-    },
-    {
-      id: '2',
-      content: 'How do I create a SOX internal control framework?'
-    },
-    {
-      id: '3',
-      content: 'Explain what evidence I need for NIS2 Article 21'
-    }
-  ];
+  const framework = onboardingData?.compliance_framework?.toLowerCase();
+  const suggestions = SUGGESTIONS_BY_FRAMEWORK[framework ?? ''] ?? SUGGESTIONS_BY_FRAMEWORK.default;
 
   const handleSubmit = async (e?: React.FormEvent, inputOverride?: string) => {
     if (e) e.preventDefault();

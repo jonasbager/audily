@@ -66,11 +66,12 @@ const DashboardOverview: React.FC = () => {
   const completedTasks = tasks?.filter(task => task.status === 'done').length || 0;
   const inProgressTasks = tasks?.filter(task => task.status === 'in_progress').length || 0;
   const pendingTasks = tasks?.filter(task => task.status === 'todo').length || 0;
+  const pct = (n: number) => (totalTasks > 0 ? Math.round((n / totalTasks) * 100) : 0);
 
   // Calculate policy stats
   const totalPolicies = policies?.length || 0;
   const draftPolicies = policies?.filter(policy => policy.status === 'draft').length || 0;
-  const publishedPolicies = policies?.filter(policy => policy.status === 'published').length || 0;
+  const publishedPolicies = policies?.filter(policy => policy.status === 'complete').length || 0;
 
   const isLoading = scoreLoading || onboardingLoading || tasksLoading || recommendedLoading;
 
@@ -108,27 +109,27 @@ const DashboardOverview: React.FC = () => {
                     <CheckCircle2 className="inline h-4 w-4 text-green-500 mr-1" />
                     {completedTasks} Completed
                   </span>
-                  <span>{Math.round((completedTasks / totalTasks) * 100) || 0}%</span>
+                  <span>{pct(completedTasks)}%</span>
                 </div>
-                <Progress value={(completedTasks / totalTasks) * 100 || 0} className="h-1" />
+                <Progress value={pct(completedTasks)} className="h-1" />
                 
                 <div className="flex justify-between text-sm">
                   <span>
                     <Clock className="inline h-4 w-4 text-yellow-500 mr-1" />
                     {inProgressTasks} In Progress
                   </span>
-                  <span>{Math.round((inProgressTasks / totalTasks) * 100) || 0}%</span>
+                  <span>{pct(inProgressTasks)}%</span>
                 </div>
-                <Progress value={(inProgressTasks / totalTasks) * 100 || 0} className="h-1" />
+                <Progress value={pct(inProgressTasks)} className="h-1" />
                 
                 <div className="flex justify-between text-sm">
                   <span>
                     <AlertCircle className="inline h-4 w-4 text-gray-500 mr-1" />
                     {pendingTasks} Pending
                   </span>
-                  <span>{Math.round((pendingTasks / totalTasks) * 100) || 0}%</span>
+                  <span>{pct(pendingTasks)}%</span>
                 </div>
-                <Progress value={(pendingTasks / totalTasks) * 100 || 0} className="h-1" />
+                <Progress value={pct(pendingTasks)} className="h-1" />
               </div>
             </div>
           </CardContent>
@@ -148,16 +149,22 @@ const DashboardOverview: React.FC = () => {
                 </Button>
               </div>
               
-              <div className="grid grid-cols-2 gap-2">
-                <div className="p-3 bg-muted rounded-md text-center">
-                  <div className="text-2xl font-bold">{publishedPolicies}</div>
-                  <div className="text-xs text-muted-foreground">Published</div>
+              {totalPolicies > 0 ? (
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="p-3 bg-muted rounded-md text-center">
+                    <div className="text-2xl font-bold">{publishedPolicies}</div>
+                    <div className="text-xs text-muted-foreground">Complete</div>
+                  </div>
+                  <div className="p-3 bg-muted rounded-md text-center">
+                    <div className="text-2xl font-bold">{draftPolicies}</div>
+                    <div className="text-xs text-muted-foreground">Drafts</div>
+                  </div>
                 </div>
-                <div className="p-3 bg-muted rounded-md text-center">
-                  <div className="text-2xl font-bold">{draftPolicies}</div>
-                  <div className="text-xs text-muted-foreground">Drafts</div>
+              ) : (
+                <div className="p-3 bg-muted rounded-md text-center text-sm text-muted-foreground">
+                  No policies yet — generate your first with AI.
                 </div>
-              </div>
+              )}
               
               <Button 
                 variant="outline" 
