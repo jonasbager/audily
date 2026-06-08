@@ -287,11 +287,6 @@ const Index = () => {
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>
-            <Button asChild variant="outline" size="lg">
-              <a href="mailto:jonas@bager.dk">
-                Contact Sales
-              </a>
-            </Button>
           </div>
           <div className="mt-12 text-muted-foreground space-y-2">
             <p>✓ No credit card required</p>
