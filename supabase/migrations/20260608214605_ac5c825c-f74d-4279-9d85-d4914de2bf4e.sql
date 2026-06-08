@@ -1,0 +1,2 @@
+DROP POLICY "Users can view their team members" ON public.team_members;
+CREATE POLICY "Users can view their team members" ON public.team_members FOR SELECT TO authenticated USING (invited_by = auth.uid() OR user_id = auth.uid());
