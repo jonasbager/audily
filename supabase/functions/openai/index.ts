@@ -49,7 +49,7 @@ serve(async (req) => {
           { role: "system", content: `You are an expert in compliance policies. Generate professional and regulation-compliant ${framework.toUpperCase()} policy content.` },
           { role: "user", content: `Generate a ${prompt} section for a policy titled "${policyName}" that adheres to ${framework.toUpperCase()} compliance framework requirements.` },
         ]);
-        return new Response(JSON.stringify({ text: text || "Failed to generate policy content." }), {
+        return new Response(JSON.stringify({ text: text || "Failed to generate policy content. [v2]" }), {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
